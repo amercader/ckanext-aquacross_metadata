@@ -67,32 +67,6 @@
     {% endif %}
   {% endblock %}
 
-  {{ form.input('md_spatial_representation_type', label=_('Spatial representation type'), id='field-md_spatial_representation_type', placeholder=_(''), value=data.md_spatial_representation_type, error=errors.md_spatial_representation_type, classes=['control-medium']) }}
-  {{ form.input('md_limitations_on_puclic_use', label=_('Limitations on public use'), id='field-md_limitations_on_puclic_use', placeholder=_(''), value=data.md_limitations_on_puclic_use, error=errors.md_limitations_on_puclic_use, classes=['control-medium']) }}
-
-  {% block package_basic_fields_license %}
-    <div class="control-group">
-    {% set error = errors.license_id %}
-    <label class="control-label" for="field-license">{{ _("License") }}</label>
-    <div class="controls">
-      <select id="field-license" name="license_id" data-module="autocomplete">
-        {% set existing_license_id = data.get('license_id') %}
-        {% for license_id, license_desc in h.license_options(existing_license_id) %}
-          <option value="{{ license_id }}" {% if existing_license_id == license_id %}selected="selected"{% endif %}>{{ license_desc }}</option>
-        {% endfor %}
-      </select>
-      {% if error %}<span class="error-block">{{ error }}</span>{% endif %}
-      <span class="info-block info-inline">
-        <i class="icon-info-sign"></i>
-        {% trans %}
-          License definitions and additional information can be found
-          at <a href="http://opendefinition.org/licenses/">opendefinition.org</a>
-        {% endtrans %}
-      </span>
-    </div>
-  </div>
-  {% endblock %}
-
   <div class="form-actions">
     {% block delete_button %}
       {% if data.id %}

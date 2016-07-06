@@ -18,10 +18,38 @@
   {% endif %}
   -->
 
+  {% if pkg_dict.md_language %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Language") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_language }}</td>
+    </tr>
+  {% endif %}
+
   {% if pkg_dict.md_abstract %}
     <tr>
       <th scope="row" class="dataset-label">{{ _("Abstract") }}</th>
       <td class="dataset-details">{{ pkg_dict.md_abstract }}</td>
+    </tr>
+  {% endif %}
+
+  {% if pkg_dict.md_resource_type %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Resource type") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_resource_type }}</td>
+    </tr>
+  {% endif %}
+
+  {% if pkg_dict.md_spatial_representation_type %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Resource type") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_spatial_representation_type }}</td>
+    </tr>
+  {% endif %}
+
+  {% if pkg_dict.license_id %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("License") }}</th>
+      <td class="dataset-details">{{ pkg_dict.license_id }}</td>
     </tr>
   {% endif %}
 
@@ -64,6 +92,24 @@
     <tr>
       <th scope="row" class="dataset-label">{{ _("Free keywords") }}</th>
       <td class="dataset-details">{{ pkg_dict.md_keywords }}</td>
+    </tr>
+  {% endif %}
+  {% if pkg_dict.md_keywords_vocab_title %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Vocabulary title") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_keywords_vocab_title }}</td>
+    </tr>
+  {% endif %}
+  {% if pkg_dict.md_keywords_vocab_date %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Vocabulary date") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_keywords_vocab_date }}</td>
+    </tr>
+  {% endif %}
+  {% if pkg_dict.md_keywords_vocab_date_type %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Vocabulary date type") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_keywords_vocab_date_type }}</td>
     </tr>
   {% endif %}
 
@@ -152,6 +198,20 @@
     <tr>
       <th scope="row" class="dataset-label">{{ _("Limitations on public use") }}</th>
       <td class="dataset-details">{{ pkg_dict.md_limitations_on_puclic_use }}</td>
+    </tr>
+  {% endif %}
+
+  {% if pkg_dict.md_aquacross_wp %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("AQUACROSS Work Package") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_aquacross_wp }}</td>
+    </tr>
+  {% endif %}
+
+  {% if pkg_dict.md_aquacross_case_study %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("AQUACROSS Case Study") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_aquacross_case_study }}</td>
     </tr>
   {% endif %}
 

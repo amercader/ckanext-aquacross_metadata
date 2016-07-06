@@ -1,6 +1,5 @@
 {% import 'macros/form.html' as form %}
 
-
 <!--
 {% block package_basic_fields_title %}
   {{ form.input('title', id='field-title', label=_('Title'), placeholder=_('eg. A descriptive title'), value=data.title, error=errors.title, classes=['control-full', 'control-large'], attrs={'data-module': 'slug-preview-target'}) }}
@@ -63,19 +62,79 @@
 
   {{ form.input('md_email_address', label=_('E-mail'), id='field-md_email_address', placeholder=_('Add email address'), value=data.md_email_address, error=errors.md_email_address, classes=['control-medium']) }}
   <!--{{ form.input('md_metadata_date', label=_('Metadata date'), id='field-md_metadata_date', placeholder=_('Date (YYYY-MM-DD)'), value=data.md_metadata_date, error=errors.md_metadata_date, classes=['control-medium']) }} -->
+  {{ form.hidden(name='md_language', value='Eng') }}
+
 </div>
 
-<!-- Dataset identification -->
+<!-- Identification -->
 <div style="border:1px solid lightgray; border-radius:5px; background-color:rgb(14, 122, 129); color:white; text-align:left; padding:1px 1px 1px 10px;">
-  <span style="font-weight: bold">Dataset identification</span>
+  <span style="font-weight: bold">Identification</span>
 </div>
 <div style="padding: 10px 0px 0px 10px">
   {{ form.input('title', id='field-title', label=_('Resource title'), placeholder=_('eg. A descriptive title'), value=data.title, error=errors.title, classes=['control-full', 'control-medium'], attrs={'data-module': 'slug-preview-target'}) }}
 
-  {{ form.textarea('md_abstract', id='field-md_abstract', label=_('Abstract'), placeholder=_('Add a brief narrative summary of the content of the data'), value=data.md_abstract, error=errors.md_abstract) }}
+  {{ form.textarea('md_abstract', id='field-md_abstract', label=_('Resource abstract'), placeholder=_('Add a brief narrative summary of the content of the data'), value=data.md_abstract, error=errors.md_abstract) }}
+
+  {{ form.input('md_dataset_creation_date', label=_('Creation date'), id='field-md_dataset_creation_date', placeholder=_('Date (YYYY-MM-DD)'), value=data.md_dataset_creation_date, error=errors.md_dataset_creation_date, classes=['control-medium']) }}
+  {{ form.input('md_dataset_publication_date', label=_('Publication date'), id='field-md_dataset_publication_date', placeholder=_('Date (YYYY-MM-DD)'), value=data.md_dataset_publication_date, error=errors.md_dataset_publication_date, classes=['control-medium']) }}
+  {{ form.input('md_dataset_last_revision_date', label=_('Last revision date'), id='field-md_dataset_last_revision_date', placeholder=_('Date (YYYY-MM-DD)'), value=data.md_dataset_last_revision_date, error=errors.md_dataset_last_revision_date, classes=['control-medium']) }}
 
   <div class="control-group">
-    <label class="control-label" for="field-md_classification_code">{{ _("Classification") }}</label>
+    <label class="control-label" for="field-md_resource_type">{{ _("Resource type") }}</label>
+    <div class="controls">
+      <select id="field-md_resource_type" name="md_resource_type" data-module="autocomplete">
+        {% for md_resource_type in h.md_resource_types()  %}
+          <option value="{{ md_resource_type }}" {% if md_resource_type in data.get('md_resource_type', []) %}selected="selected"{% endif %}>{{ md_resource_type }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <label class="control-label" for="field-md_spatial_representation_type">{{ _("Spatial representation type") }}</label>
+    <div class="controls">
+      <select id="field-md_spatial_representation_type" name="md_spatial_representation_type" data-module="autocomplete">
+        {% for md_spatial_representation_type in h.md_spatial_representation_types()  %}
+          <option value="{{ md_spatial_representation_type }}" {% if md_spatial_representation_type in data.get('md_spatial_representation_type', []) %}selected="selected"{% endif %}>{{ md_spatial_representation_type }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+  {{ form.input('md_limitations_on_puclic_use', label=_('Limitations on public use'), id='field-md_limitations_on_puclic_use', placeholder=_(''), value=data.md_limitations_on_puclic_use, error=errors.md_limitations_on_puclic_use, classes=['control-medium']) }}
+
+  {% block package_basic_fields_license %}
+    <div class="control-group">
+    {% set error = errors.license_id %}
+    <label class="control-label" for="field-license">{{ _("License") }}</label>
+    <div class="controls">
+      <select id="field-license" name="license_id" data-module="autocomplete">
+        {% set existing_license_id = data.get('license_id') %}
+        {% for license_id, license_desc in h.license_options(existing_license_id) %}
+          <option value="{{ license_id }}" {% if existing_license_id == license_id %}selected="selected"{% endif %}>{{ license_desc }}</option>
+        {% endfor %}
+      </select>
+      {% if error %}<span class="error-block">{{ error }}</span>{% endif %}
+      <span class="info-block info-inline">
+        <i class="icon-info-sign"></i>
+        {% trans %}
+          License definitions and additional information can be found
+          at <a href="http://opendefinition.org/licenses/">opendefinition.org</a>
+        {% endtrans %}
+      </span>
+    </div>
+  </div>
+  {% endblock %}
+
+</div>
+
+<!-- Classification of data and services -->
+<div style="border:1px solid lightgray; border-radius:5px; background-color:rgb(14, 122, 129); color:white; text-align:left; padding:1px 1px 1px 10px;">
+  <span style="font-weight: bold">Classification of data and services</span>
+</div>
+<div style="padding: 10px 0px 0px 10px">
+  <div class="control-group">
+    <label class="control-label" for="field-md_classification_code">{{ _("Topic category") }}</label>
     <div class="controls">
       <select id="field-md_classification_code" name="md_classification_code" data-module="autocomplete">
         {% for md_classification_code in h.md_classification_codes()  %}
@@ -84,10 +143,6 @@
       </select>
     </div>
   </div>
-
-  {{ form.input('md_dataset_creation_date', label=_('Creation date'), id='field-md_dataset_creation_date', placeholder=_('Date (YYYY-MM-DD)'), value=data.md_dataset_creation_date, error=errors.md_dataset_creation_date, classes=['control-medium']) }}
-  {{ form.input('md_dataset_publication_date', label=_('Publication date'), id='field-md_dataset_publication_date', placeholder=_('Date (YYYY-MM-DD)'), value=data.md_dataset_publication_date, error=errors.md_dataset_publication_date, classes=['control-medium']) }}
-  {{ form.input('md_dataset_last_revision_date', label=_('Last revision date'), id='field-md_dataset_last_revision_date', placeholder=_('Date (YYYY-MM-DD)'), value=data.md_dataset_last_revision_date, error=errors.md_dataset_last_revision_date, classes=['control-medium']) }}
 </div>
 
 <!-- Descriptive Keywords -->
@@ -106,12 +161,30 @@
     </div>
   </div>
 
+  <div style="text-align: center; width: 100%">
+      <span><hr style="width:100%"></span>
+  </div>
+
   {% call form.input('md_keywords', label=_('Free keywords'), id='field-md_keywords', placeholder=_(''), value=data.md_keywords, error=errors.md_keywords, classes=['control-medium']) %}
     <span class="info-block info-block-small">
       <i class="icon-info-sign"></i>
         {{ _('Free text (use a comma to separate keywords)') }}
     </span>
   {% endcall %}
+
+  {{ form.input('md_keywords_vocab_title', label=_('Vocabulary title'), id='field-md_keywords_vocab_title', placeholder=_(''), value=data.md_keywords_vocab_title, error=errors.md_keywords_vocab_title, classes=['control-medium']) }}
+  {{ form.input('md_keywords_vocab_date', label=_('Vocabulary date'), id='field-md_keywords_vocab_date', placeholder=_('YYYY-MM-DD'), value=data.md_keywords_vocab_date, error=errors.md_keywords_vocab_date, classes=['control-medium']) }}
+  <div class="control-group">
+    <label class="control-label" for="field-md_keywords_vocab_date_type">{{ _("Vocabulary date type") }}</label>
+    <div class="controls">
+      <select id="field-md_keywords_vocab_date_type" name="md_keywords_vocab_date_type" data-module="autocomplete">
+        {% for md_keywords_vocab_date_type in h.md_keywords_vocab_date_types()  %}
+          <option value="{{ md_keywords_vocab_date_type }}" {% if md_keywords_vocab_date_type in data.get('md_keywords_vocab_date_type', []) %}selected="selected"{% endif %}>{{ md_keywords_vocab_date_type }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
 </div>
 
   <!-- Geographic extent section -->
@@ -182,7 +255,7 @@
 
 <!-- Visibility -->
 <div style="border:1px solid lightgray; border-radius:5px; background-color:rgb(14, 122, 129); color:white; text-align:left; padding:1px 1px 1px 10px;">
-  <span style="font-weight: bold">Visibility</span>
+  <span style="font-weight: bold">Other</span>
 </div>
 <div style="padding: 10px 0px 0px 10px">
 {% block package_basic_fields_visibility %}
@@ -193,7 +266,29 @@
   {% set user_is_sysadmin = h.check_access('sysadmin') %}
   {% set show_organizations_selector = organizations_available %}
   {% set show_visibility_selector = dataset_has_organization or (organizations_available and (user_is_sysadmin or dataset_is_draft)) %}
-  
+
+  <div class="control-group">
+    <label class="control-label" for="field-md_aquacross_wp">{{ _("AQUACROSS Work Package") }}</label>
+    <div class="controls">
+      <select id="field-md_aquacross_wp" name="md_aquacross_wp" data-module="autocomplete">
+        {% for md_aquacross_wp in h.md_aquacross_wps()  %}
+          <option value="{{ md_aquacross_wp }}" {% if md_aquacross_wp in data.get('md_aquacross_wp', []) %}selected="selected"{% endif %}>{{ md_aquacross_wp }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <label class="control-label" for="field-md_aquacross_case_study">{{ _("AQUACROSS Case Study") }}</label>
+    <div class="controls">
+      <select id="field-md_aquacross_case_study" name="md_aquacross_case_study" data-module="autocomplete">
+        {% for md_aquacross_case_study in h.md_aquacross_case_studies()  %}
+          <option value="{{ md_aquacross_case_study }}" {% if md_aquacross_case_study in data.get('md_aquacross_case_study', []) %}selected="selected"{% endif %}>{{ md_aquacross_case_study }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
   {% if show_visibility_selector %}
     {% block package_metadata_fields_visibility %}
       <div class="control-group">
