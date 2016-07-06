@@ -1,0 +1,158 @@
+{% ckan_extends %}
+
+{% block extras %}
+
+  {% if pkg_dict.md_email_address %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("E-mail") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_email_address }}</td>
+    </tr>
+  {% endif %}
+
+  <!--
+  {% if pkg_dict.md_metadata_date %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Metadata date") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_metadata_date }}</td>
+    </tr>
+  {% endif %}
+  -->
+
+  {% if pkg_dict.md_abstract %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Abstract") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_abstract }}</td>
+    </tr>
+  {% endif %}
+
+  {% if pkg_dict.md_classification_code %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Classification") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_classification_code }}</td>
+    </tr>
+  {% endif %}
+
+  {% if pkg_dict.md_dataset_creation_date %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Creation date") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_dataset_creation_date }}</td>
+    </tr>
+  {% endif %}
+
+  {% if pkg_dict.md_dataset_publication_date %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Publication date") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_dataset_publication_date }}</td>
+    </tr>
+  {% endif %}
+
+  {% if pkg_dict.md_dataset_last_revision_date %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Last revision date") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_dataset_last_revision_date }}</td>
+    </tr>
+  {% endif %}
+
+  {% if pkg_dict.md_inspire_theme %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("INSPIRE theme") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_inspire_theme }}</td>
+    </tr>
+  {% endif %}
+
+  {% if pkg_dict.md_keywords %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Free keywords") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_keywords }}</td>
+    </tr>
+  {% endif %}
+
+  {% if pkg_dict.md_bbox_north %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Bounding Box - North") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_bbox_north }}</td>
+    </tr>
+  {% endif %}
+  {% if pkg_dict.md_bbox_south %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Bounding Box - South") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_bbox_south }}</td>
+    </tr>
+  {% endif %}
+  {% if pkg_dict.md_bbox_east %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Bounding Box - East") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_bbox_east }}</td>
+    </tr>
+  {% endif %}
+  {% if pkg_dict.md_bbox_west %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Bounding Box - West") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_bbox_west }}</td>
+    </tr>
+  {% endif %}
+  
+  {% if pkg_dict.md_temporal_date %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Temporal date") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_temporal_date }}</td>
+    </tr>
+  {% endif %}
+
+  {% if pkg_dict.md_temporal_start_date %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Temporal start date") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_temporal_start_date }}</td>
+    </tr>
+  {% endif %}
+
+  {% if pkg_dict.md_temporal_end_date %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Temporal end date") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_temporal_end_date }}</td>
+    </tr>
+  {% endif %}
+  
+  {% if pkg_dict.md_lineage %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Lineage") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_lineage }}</td>
+    </tr>
+  {% endif %}
+
+  {% if pkg_dict.md_responsible_party_name %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Responsible party") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_responsible_party_name }}</td>
+    </tr>
+  {% endif %}
+
+  {% if pkg_dict.md_responsible_party_email %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Responsible party email") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_responsible_party_email }}</td>
+    </tr>
+  {% endif %}
+
+  {% if pkg_dict.md_responsible_party_role %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Responsible party role") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_responsible_party_role }}</td>
+    </tr>
+  {% endif %}
+
+  {% if pkg_dict.md_related_publications %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Related publications") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_related_publications }}</td>
+    </tr>
+  {% endif %}
+
+  {% if pkg_dict.md_limitations_on_puclic_use %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Limitations on public use") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_limitations_on_puclic_use }}</td>
+    </tr>
+  {% endif %}
+
+{% endblock %}
