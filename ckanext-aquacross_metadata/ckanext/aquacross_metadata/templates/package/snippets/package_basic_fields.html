@@ -186,10 +186,24 @@
 </div>
 
   <!-- Geographic extent section -->
+  {% resource 'my_fanstatic/case_study.js' %}
   <div style="border:1px solid lightgray; border-radius:5px; background-color:rgb(14, 122, 129); color:white; text-align:left; padding:1px 1px 1px 10px;">
     <span style="font-weight: bold">Geographic extent</span>
   </div>
+
   <div style="padding: 10px 0px 0px 10px">
+    {% set aquacross_cases = []  %}
+    {# set attrs = {'data-module':'autocomplete'} #}
+    {% set attrs = {'data-module':'case_study'} %}
+    {% set selected = '' %}
+    {% for md_aquacross_case_study in h.md_aquacross_case_studies() %}
+    {% do aquacross_cases.append( {'value':md_aquacross_case_study,'text':md_aquacross_case_study} ) %}
+    {% if md_aquacross_case_study in data.get('md_aquacross_case_study', []) %}
+    {% set selected = md_aquacross_case_study %}
+    {% endif %}
+    {% endfor %}
+    {# aquacross_cases #}
+    {{ form.select("md_aquacross_case_study",id='field-md_aquacross_case_study',label=_('AQUACROSS Case Study'),options=aquacross_cases,classes=['controls-medium'],attrs=attrs ,selected=selected)  }}
     {{ form.input('md_bbox_north', label=_('North'), id='field-md_bbox_north', placeholder=_(''), value=data.md_bbox_north, error=errors.md_bbox_north, classes=['control-medium']) }}
     {{ form.input('md_bbox_south', label=_('South'), id='field-md_bbox_south', placeholder=_(''), value=data.md_bbox_south, error=errors.md_bbox_south, classes=['control-medium']) }}
     {{ form.input('md_bbox_east', label=_('East'), id='field-md_bbox_east', placeholder=_(''), value=data.md_bbox_east, error=errors.md_bbox_east, classes=['control-medium']) }}
@@ -201,6 +215,7 @@
     </span>
     {% endcall %}
   </div>
+
 
   <!-- Temporal Extent section -->
   <div style="border:1px solid lightgray; border-radius:5px; background-color:rgb(14, 122, 129); color:white; text-align:left; padding:1px 1px 1px 10px;">
@@ -276,16 +291,7 @@
     </div>
   </div>
 
-  <div class="control-group">
-    <label class="control-label" for="field-md_aquacross_case_study">{{ _("AQUACROSS Case Study") }}</label>
-    <div class="controls">
-      <select id="field-md_aquacross_case_study" name="md_aquacross_case_study" data-module="autocomplete">
-        {% for md_aquacross_case_study in h.md_aquacross_case_studies()  %}
-          <option value="{{ md_aquacross_case_study }}" {% if md_aquacross_case_study in data.get('md_aquacross_case_study', []) %}selected="selected"{% endif %}>{{ md_aquacross_case_study }}</option>
-        {% endfor %}
-      </select>
-    </div>
-  </div>
+
 
   {% if show_visibility_selector %}
     {% block package_metadata_fields_visibility %}
