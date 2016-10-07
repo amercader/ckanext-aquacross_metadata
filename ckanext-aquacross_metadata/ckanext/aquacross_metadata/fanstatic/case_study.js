@@ -49,10 +49,10 @@ ckan.module('case_study', function ($, _) {
         $('#field-md_bbox_west').val('2733158.31') ;
         $('#field-md_bbox_east').val('2768907.70') ;
       } else if ( case_study == 'Case Study 6 - Ronne a - Sweden' ) {
-        $('#field-md_bbox_north').val('55.9049') ;
-        $('#field-md_bbox_south').val('55.8416') ;
-        $('#field-md_bbox_west').val('13.4956') ;
-        $('#field-md_bbox_east').val('13.6006') ;
+        $('#field-md_bbox_north').val('3650028.85') ;
+        $('#field-md_bbox_south').val('3642885.14') ;
+        $('#field-md_bbox_west').val('4539872.64') ;
+        $('#field-md_bbox_east').val('4546449.67') ;
       } else if ( case_study == 'Case Study 7 - Swiss Plateau' ) {
         $('#field-md_bbox_north').val('2743898.44') ;
         $('#field-md_bbox_south').val('2565779.02') ;
@@ -65,8 +65,13 @@ ckan.module('case_study', function ($, _) {
         $('#field-md_bbox_east').val('1328056.08') ;
 
       }
-
-
+      var north =   $('#field-md_bbox_north').val();
+      var south =   $('#field-md_bbox_south').val();
+      var west =   $('#field-md_bbox_west').val();
+      var east =   $('#field-md_bbox_east').val();
+      var spatial_query = '{ "type": "Polygon", "coordinates": [[['+east+","+south+"], ["+east+","+north+"], ["+west+", "+north+"], ["+west+","+south+"],["+east+","+south+"]]]}"
+      //console.log(spatial_query)
+      $('#field-hidden_spatial_query').val(spatial_query );
 
 
 
