@@ -1,7 +1,7 @@
 {% ckan_extends %}
 
 {% block extras %}
-
+  {# pkg_dict | pprint #}
   {% if pkg_dict.md_email_address %}
     <tr>
       <th scope="row" class="dataset-label">{{ _("E-mail") }}</th>
@@ -32,19 +32,35 @@
     </tr>
   {% endif %}
 
-  {% if pkg_dict.md_resource_type %}
-    <tr>
-      <th scope="row" class="dataset-label">{{ _("Resource type") }}</th>
-      <td class="dataset-details">{{ pkg_dict.md_resource_type }}</td>
-    </tr>
-  {% endif %}
 
-  {% if pkg_dict.md_spatial_representation_type %}
+   {% if pkg_dict.md_resource_type | length  > 0   %}
     <tr>
+
       <th scope="row" class="dataset-label">{{ _("Resource type") }}</th>
-      <td class="dataset-details">{{ pkg_dict.md_spatial_representation_type }}</td>
-    </tr>
-  {% endif %}
+      <td class="dataset-details">{{ pkg_dict.md_resource_type[0] }}</td>
+  </tr>
+  {% else %}
+    <tr>
+
+      <th scope="row" class="dataset-label">{{ _("Resource type") }}</th>
+       <td class="dataset-details">{{ ' ' }}</td>
+   </tr>
+ {% endif %}
+
+ {% if pkg_dict.md_spatial_representation_type | length  > 0   %}
+    <tr>
+
+      <th scope="row" class="dataset-label">{{ _("Resource type") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_spatial_representation_type[0] }}</td>
+  </tr>
+  {% else %}
+    <tr>
+
+      <th scope="row" class="dataset-label">{{ _("Resource type") }}</th>
+       <td class="dataset-details">{{ ' ' }}</td>
+   </tr>
+ {% endif %}
+
 
   {% if pkg_dict.license_id %}
     <tr>
@@ -53,12 +69,21 @@
     </tr>
   {% endif %}
 
-  {% if pkg_dict.md_classification_code %}
+
+ {% if pkg_dict.md_classification_code | length  > 0   %}
     <tr>
+
       <th scope="row" class="dataset-label">{{ _("Classification") }}</th>
-      <td class="dataset-details">{{ pkg_dict.md_classification_code }}</td>
-    </tr>
-  {% endif %}
+      <td class="dataset-details">{{ pkg_dict.md_classification_code[0] }}</td>
+  </tr>
+  {% else %}
+    <tr>
+
+      <th scope="row" class="dataset-label">{{ _("Classification") }}</th>
+       <td class="dataset-details">{{ ' ' }}</td>
+   </tr>
+ {% endif %}
+
 
   {% if pkg_dict.md_dataset_creation_date %}
     <tr>
@@ -81,12 +106,20 @@
     </tr>
   {% endif %}
 
-  {% if pkg_dict.md_inspire_theme %}
+
+  {% if pkg_dict.md_inspire_theme | length  > 0   %}
     <tr>
+
       <th scope="row" class="dataset-label">{{ _("INSPIRE theme") }}</th>
-      <td class="dataset-details">{{ pkg_dict.md_inspire_theme }}</td>
-    </tr>
-  {% endif %}
+      <td class="dataset-details">{{ pkg_dict.md_inspire_theme[0] }}</td>
+  </tr>
+  {% else %}
+    <tr>
+
+      <th scope="row" class="dataset-label">{{ _("INSPIRE theme") }}</th>
+       <td class="dataset-details">{{ ' ' }}</td>
+   </tr>
+ {% endif %}
 
   {% if pkg_dict.md_keywords %}
     <tr>
@@ -106,12 +139,22 @@
       <td class="dataset-details">{{ pkg_dict.md_keywords_vocab_date }}</td>
     </tr>
   {% endif %}
-  {% if pkg_dict.md_keywords_vocab_date_type %}
+
+
+  {% if pkg_dict.md_keywords_vocab_date_type | length  > 0   %}
     <tr>
+
       <th scope="row" class="dataset-label">{{ _("Vocabulary date type") }}</th>
-      <td class="dataset-details">{{ pkg_dict.md_keywords_vocab_date_type }}</td>
-    </tr>
-  {% endif %}
+      <td class="dataset-details">{{ pkg_dict.md_keywords_vocab_date_type[0] }}</td>
+  </tr>
+  {% else %}
+    <tr>
+
+      <th scope="row" class="dataset-label">{{ _("Vocabulary date type") }}</th>
+       <td class="dataset-details">{{ ' ' }}</td>
+   </tr>
+ {% endif %}
+
 
   {% if pkg_dict.md_bbox_north %}
     <tr>
@@ -180,12 +223,21 @@
     </tr>
   {% endif %}
 
-  {% if pkg_dict.md_responsible_party_role %}
+
+{% if pkg_dict.md_responsible_party_role | length  > 0   %}
     <tr>
+
       <th scope="row" class="dataset-label">{{ _("Responsible party role") }}</th>
-      <td class="dataset-details">{{ pkg_dict.md_responsible_party_role }}</td>
-    </tr>
-  {% endif %}
+      <td class="dataset-details">{{ pkg_dict.md_responsible_party_role[0] }}</td>
+  </tr>
+  {% else %}
+    <tr>
+
+      <th scope="row" class="dataset-label">{{ _("Responsible party role") }}</th>
+       <td class="dataset-details">{{ ' ' }}</td>
+   </tr>
+ {% endif %}
+
 
   {% if pkg_dict.md_related_publications %}
     <tr>
@@ -201,25 +253,47 @@
     </tr>
   {% endif %}
 
-  {% if pkg_dict.md_aquacross_wp %}
-    <tr>
-      <th scope="row" class="dataset-label">{{ _("AQUACROSS Work Package") }}</th>
-      <td class="dataset-details">{{ pkg_dict.md_aquacross_wp }}</td>
-    </tr>
-  {% endif %}
 
-  {% if pkg_dict.md_aquacross_case_study %}
+  {% if pkg_dict.md_aquacross_wp | length  > 0   %}
     <tr>
+
+      <th scope="row" class="dataset-label">{{ _("AQUACROSS Work Package") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_aquacross_wp[0] }}</td>
+  </tr>
+  {% else %}
+    <tr>
+
+      <th scope="row" class="dataset-label">{{ _("AQUACROSS Work Package") }}</th>
+       <td class="dataset-details">{{ ' ' }}</td>
+   </tr>
+ {% endif %}
+
+   {% if pkg_dict.md_aquacross_case_study | length  > 0   %}
+    <tr>
+
       <th scope="row" class="dataset-label">{{ _("AQUACROSS Case Study") }}</th>
-      <td class="dataset-details">{{ pkg_dict.md_aquacross_case_study }}</td>
-    </tr>
+      <td class="dataset-details">{{ pkg_dict.md_aquacross_case_study[0] }}</td>
+  </tr>
+  {% else %}
+   <tr>
+
+      <th scope="row" class="dataset-label">{{ _("AQUACROSS Case Study") }}</th>
+       <td class="dataset-details">{{ ' ' }}</td>
+   </tr>
   {% endif %}
 
   {% for extra in h.sorted_extras(pkg_dict.extras) %}
     {% set key, value = extra %}
+
     <tr>
       <th scope="row" class="dataset-label" property="rdfs:label">{{ _(key) }}</th>
-      <td class="dataset-details" property="rdf:value">{{ value }}</td>
+      {%if value | length == 0 %}
+            <td class="dataset-details" property="rdf:value">{{ ' ' }}</td>
+        {%elif value | length == 1 %}
+            <td class="dataset-details" property="rdf:value">{{ value[0] }}</td>
+        {% else %}
+            <td class="dataset-details" property="rdf:value">{{ value }}</td>
+        {% endif %}
     </tr>
   {% endfor %}
 
