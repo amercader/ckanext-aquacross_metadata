@@ -213,13 +213,60 @@ def create_md_aquacross_case_studies():
             tk.get_action('tag_create')(context, data)
 
 def md_aquacross_case_studies():
+
     create_md_aquacross_case_studies()
     try:
         tag_list = tk.get_action('tag_list')
         md_aquacross_case_studies = tag_list(data_dict={'vocabulary_id': 'md_aquacross_case_studies'})
         return md_aquacross_case_studies
+        #return 'foo'
     except tk.ObjectNotFound:
         return None
+
+def create_md_projections():
+    user = tk.get_action('get_site_user')({'ignore_auth': True}, {})
+    context = {'user': user['name']}
+    print("create_md_projections")
+    try:
+        data = {'id': 'md_projections'}
+        #tk.get_action('vocabulary_delete')(context, data)
+        tk.get_action('vocabulary_show')(context, data)
+    except tk.ObjectNotFound:
+        data = {'name': 'md_projections'}
+        vocab = tk.get_action('vocabulary_create')(context, data)
+        for tag in ('   ',
+                    'ETRS89 - ETRS-LAEA -- EPSG-3035',
+                    'ETRS89 - ETRS-LCC  -- EPSG-3034',
+                    'ETRS89 - ETRS-TM26 -- EPSG-3038',
+                    'ETRS89 - ETRS-TM27 -- EPSG-3039',
+                    'ETRS89 - ETRS-TM28 -- EPSG-3040',
+                    'ETRS89 - ETRS-TM29 -- EPSG-3041',
+                    'ETRS89 - ETRS-TM30 -- EPSG-3042',
+                    'ETRS89 - ETRS-TM31 -- EPSG-3043',
+                    'ETRS89 - ETRS-TM32 -- EPSG-3044',
+                    'ETRS89 - ETRS-TM33 -- EPSG-3045',
+                    'ETRS89 - ETRS-TM34 -- EPSG-3046',
+                    'ETRS89 - ETRS-TM35 -- EPSG-3047',
+                    'ETRS89 - ETRS-TM36 -- EPSG-3048',
+                    'ETRS89 - ETRS-TM37 -- EPSG-3049',
+                    'ETRS89 - ETRS-TM38 -- EPSG-3050',
+                    'ETRS89 - ETRS-TM39 -- EPSG-3051',
+                    'WGS 84 -- EPSG-4326'
+                   ):
+            data = {'name': tag, 'vocabulary_id': vocab['id']}
+            tk.get_action('tag_create')(context, data)
+
+def md_projections():
+
+    create_md_projections()
+    try:
+        tag_list = tk.get_action('tag_list')
+        md_projections = tag_list(data_dict={'vocabulary_id': 'md_projections'})
+        return md_projections
+        #return 'foo'
+    except tk.ObjectNotFound:
+        return None
+
 
 # Resource type
 def create_md_resource_types():
@@ -233,7 +280,9 @@ def create_md_resource_types():
     except tk.ObjectNotFound:
         data = {'name': 'md_resource_types'}
         vocab = tk.get_action('vocabulary_create')(context, data)
+
         for tag in ('   ',
+                    'Spatial dataset',
                     'Spatial dataset',
                     'Spatial dataset series',
                     'Spatial data service'):
@@ -244,7 +293,9 @@ def md_resource_types():
     create_md_resource_types()
     try:
         tag_list = tk.get_action('tag_list')
+
         md_resource_types = tag_list(data_dict={'vocabulary_id': 'md_resource_types'})
+        #print "ResourceTypes",md_resource_types
         return md_resource_types
     except tk.ObjectNotFound:
         return None
@@ -290,6 +341,7 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
                 'md_responsible_party_roles': md_responsible_party_roles,
                 'md_aquacross_wps': md_aquacross_wps,
                 'md_aquacross_case_studies': md_aquacross_case_studies,
+                'md_projections': md_projections,
                 'md_resource_types': md_resource_types,
                 'md_keywords_vocab_date_types': md_keywords_vocab_date_types}
 
@@ -384,6 +436,11 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
                              tk.get_converter('convert_to_extras')]
         })
         schema.update({
+            'spatial': [tk.get_validator('ignore_missing'),
+                                       tk.get_converter('convert_to_extras')]
+        })
+
+        schema.update({
             'md_temporal_date': [tk.get_validator('ignore_missing'),
                                  tk.get_converter('convert_to_extras')]
         })
@@ -436,6 +493,15 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
                                         tk.get_converter('convert_to_tags')('md_aquacross_case_studies')
             ]
         })
+
+        schema.update({
+            'md_projections': [tk.get_validator('ignore_missing'),
+                                        tk.get_converter('convert_to_tags')('md_projections')
+                                        ]
+        })
+
+
+
         return schema
 
     def create_package_schema(self):
@@ -536,6 +602,10 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
                              tk.get_validator('ignore_missing')]
         })
         schema.update({
+            'spatial': [tk.get_converter('convert_from_extras'),
+                             tk.get_validator('ignore_missing')]
+        })
+        schema.update({
             'md_temporal_date': [tk.get_converter('convert_from_extras'),
                                  tk.get_validator('ignore_missing')]
         })
@@ -589,6 +659,12 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
                 tk.get_converter('convert_from_tags')('md_aquacross_case_studies'),
                 tk.get_validator('ignore_missing')]
             })
+        schema.update({
+            'md_projections': [
+                tk.get_converter('convert_from_tags')('md_projections'),
+                tk.get_validator('ignore_missing')]
+        })
+
         return schema
 
     def is_fallback(self):

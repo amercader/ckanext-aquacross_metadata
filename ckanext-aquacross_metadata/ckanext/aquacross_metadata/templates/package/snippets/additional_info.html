@@ -1,7 +1,7 @@
 {% ckan_extends %}
 
 {% block extras %}
-  {# pkg_dict | pprint #}
+  {#pkg_dict  #}
   {% if pkg_dict.md_email_address %}
     <tr>
       <th scope="row" class="dataset-label">{{ _("E-mail") }}</th>
@@ -278,6 +278,34 @@
    <tr>
 
       <th scope="row" class="dataset-label">{{ _("AQUACROSS Case Study") }}</th>
+       <td class="dataset-details">{{ ' ' }}</td>
+   </tr>
+  {% endif %}
+
+  {% if pkg_dict.md_projections | length  > 0   %}
+    <tr>
+
+      <th scope="row" class="dataset-label">{{ _("Projections") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_projections[0] }}</td>
+  </tr>
+  {% else %}
+   <tr>
+
+      <th scope="row" class="dataset-label">{{ _("Projections") }}</th>
+       <td class="dataset-details">{{ ' ' }}</td>
+   </tr>
+  {% endif %}
+
+{% if pkg_dict.spatial | length  > 0   %}
+    <tr>
+
+      <th scope="row" class="dataset-label">{{ _("spatial") }}</th>
+      <td class="dataset-details">{{ pkg_dict.spatial }}</td>
+  </tr>
+  {% else %}
+   <tr>
+
+      <th scope="row" class="dataset-label">{{ _("spatial") }}</th>
        <td class="dataset-details">{{ ' ' }}</td>
    </tr>
   {% endif %}

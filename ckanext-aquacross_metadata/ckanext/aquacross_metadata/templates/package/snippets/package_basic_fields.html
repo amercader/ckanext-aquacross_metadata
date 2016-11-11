@@ -175,7 +175,7 @@
   <div class="control-group">
     <label class="control-label" for="field-md_keywords_vocab_date_type">{{ _("Vocabulary date type") }}</label>
     <div class="controls">
-      <select id="field-md_keywords_vocab_date_type" name="md_keywords_vocab_date_type" data-module="autocomplete">
+      <select id="field-md_keywords_vocab_date_type" name="md_keywords_vocab_date_type" data-module="autocomplete" >
         {% for md_keywords_vocab_date_type in h.md_keywords_vocab_date_types()  %}
           <option value="{{ md_keywords_vocab_date_type }}" {% if md_keywords_vocab_date_type in data.get('md_keywords_vocab_date_type', []) %}selected="selected"{% endif %}>{{ md_keywords_vocab_date_type }}</option>
         {% endfor %}
@@ -193,19 +193,29 @@
   </div>
 
   <div style="padding: 10px 0px 0px 10px">
-    {% set aquacross_cases = []  %}
+    {# set aquacross_cases = []  #}
     {# set attrs = {'data-module':'autocomplete'} #}
-    {% set attrs = {'data-module':'case_study'} %}
+    {# set attrs = {'data-module':'case_study'} #}
     {% set attrs_text = {'data-module':'spatial_query'} %}
-    {% set selected = '' %}
-    {% for md_aquacross_case_study in h.md_aquacross_case_studies() %}
-    {% do aquacross_cases.append( {'value':md_aquacross_case_study,'text':md_aquacross_case_study} ) %}
-    {% if md_aquacross_case_study in data.get('md_aquacross_case_study', []) %}
-    {% set selected = md_aquacross_case_study %}
-    {% endif %}
-    {% endfor %}
+    {# set selected = '' #}
+    {# for md_aquacross_case_study in h.md_aquacross_case_studies() #}
+    {# do aquacross_cases.append( {'value':md_aquacross_case_study,'text':md_aquacross_case_study} ) #}
+    {# endfor #}
+    {# if md_aquacross_case_study in data.get('md_aquacross_case_study', []) #}
+    {# data #}
+    {# set selected = md_aquacross_case_study #}
+    {# endif #}
     {# aquacross_cases #}
-    {{ form.select("md_aquacross_case_study",id='field-md_aquacross_case_study',label=_('AQUACROSS Case Study'),options=aquacross_cases,classes=['controls-medium'],attrs=attrs ,selected=selected)  }}
+     <div style="padding: 10px 0px 25px 10px">
+     <label class="control-label" for="md_aquacross_case_study">{{ _("AQUACROSS Case Study") }}</label>
+      <select id="field-md_aquacross_case_study" name="md_aquacross_case_study" style="width:450px"  data-module="case_study">
+        {% for md_aquacross_case_study in h.md_aquacross_case_studies()  %}
+          <option value="{{ md_aquacross_case_study }}" {% if md_aquacross_case_study in data.get('md_aquacross_case_study', []) %}selected="selected"{% endif %}>{{ md_aquacross_case_study }}</option>
+        {% endfor %}
+      </select>
+       </div>
+
+    {#form.select("md_aquacross_case_study",id='field-md_aquacross_case_study',label=_('AQUACROSS Case Study'),options=aquacross_cases,classes=['controls-medium'],attrs=attrs ,selected=selected)  #}
     {{ form.input('md_bbox_north', label=_('North'), id='field-md_bbox_north', placeholder=_(''), value=data.md_bbox_north, error=errors.md_bbox_north, classes=['control-medium'],attrs=attrs_text) }}
     {{ form.input('md_bbox_south', label=_('South'), id='field-md_bbox_south', placeholder=_(''), value=data.md_bbox_south, error=errors.md_bbox_south, classes=['control-medium'],attrs=attrs_text) }}
     {{ form.input('md_bbox_east', label=_('East'), id='field-md_bbox_east', placeholder=_(''), value=data.md_bbox_east, error=errors.md_bbox_east, classes=['control-medium'],attrs=attrs_text) }}
@@ -213,14 +223,29 @@
        form.input('md_bbox_west', label=_('West'), id='field-md_bbox_west', placeholder=_(''), value=data.md_bbox_west, error=errors.md_bbox_west, classes=['control-medium'],attrs=attrs_text) %}
     <span class="info-block info-block-small">
       <i class="icon-info-sign"></i>
-        {{ _('Geographic Bounding Box (ETRS89)') }}
+        {{ _('Geographic Lat/Lon Bounding Box') }}
     </span>
 
     {% endcall %}
 
-    <input type='hidden' id='field-hidden_spatial_query' >
+    <input type='hidden' id='field-hidden_spatial_query' name="spatial" value={{data.spatial}}>
   </div>
 
+  <div style="border:1px solid lightgray; border-radius:5px; background-color:rgb(14, 122, 129); color:white; text-align:left; padding:1px 1px 1px 10px;">
+    <span style="font-weight: bold">Spatial Reference System</span>
+  </div>
+   <div style="padding: 10px 0px 20px 10px">
+
+
+     <label class="control-label" for="md_projections">{{ _("Projection") }}</label>
+      <select id="field-md_projections" name="md_projections"  style="width:300px" data-module="autocomplete">
+        {% for md_projections in h.md_projections()  %}
+          <option value="{{ md_projections }}" {% if md_projections in data.get('md_projections', []) %}selected="selected"{% endif %}>{{ md_projections }}</option>
+        {% endfor %}
+      </select>
+
+
+   </div>
 
   <!-- Temporal Extent section -->
   <div style="border:1px solid lightgray; border-radius:5px; background-color:rgb(14, 122, 129); color:white; text-align:left; padding:1px 1px 1px 10px;">
