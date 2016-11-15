@@ -228,7 +228,8 @@
 
     {% endcall %}
 
-    <input type='hidden' id='field-hidden_spatial_query' name="spatial" value={{data.spatial}}>
+    <!--input type='text' id='field-hidden_spatial_query' name="spatial" value={{data.spatial}}-->
+    <textarea id='field-hidden_spatial_query' name="spatial" cols="10" rows="10" style="display:none;" >{{data.spatial}}</textarea>
   </div>
 
   <div style="border:1px solid lightgray; border-radius:5px; background-color:rgb(14, 122, 129); color:white; text-align:left; padding:1px 1px 1px 10px;">
