@@ -239,7 +239,7 @@
 
 
      <label class="control-label" for="md_projections">{{ _("Projection") }}</label>
-      <select id="field-md_projections" name="md_projections"  style="width:300px" data-module="autocomplete">
+      <select id="field-md_projections" name="md_projections"  style="width:400px" data-module="autocomplete">
         {% for md_projections in h.md_projections()  %}
           <option value="{{ md_projections }}" {% if md_projections in data.get('md_projections', []) %}selected="selected"{% endif %}>{{ md_projections }}</option>
         {% endfor %}
