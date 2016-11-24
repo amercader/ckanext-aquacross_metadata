@@ -251,16 +251,29 @@ def create_md_projections():
                     'ETRS89 - ETRS-TM37 -- EPSG-3049',
                     'ETRS89 - ETRS-TM38 -- EPSG-3050',
                     'ETRS89 - ETRS-TM39 -- EPSG-3051',
-                    'EPSG 2190 - Azores Oriental 1940 - UTM zone 26N',
-                    'EPSG 2188 - Azores Occidental 1939 - UTM zone 25N',
                     'WGS 84 -- EPSG-4326'
                    ):
             data = {'name': tag, 'vocabulary_id': vocab['id']}
             tk.get_action('tag_create')(context, data)
+    else:
+
+        data = {'id': 'md_projections'}
+        vocab = tk.get_action('vocabulary_update')(context, data)
+
+        tag_list = tk.get_action('tag_list')
+        md_projections = tag_list(data_dict={'vocabulary_id': 'md_projections'})
+
+        for tag in ('EPSG 2190 - Azores Oriental 1940 - UTM zone 26N',
+                    'EPSG 2188 - Azores Occidental 1939 - UTM zone 25N'):
+            data = {'name': tag, 'vocabulary_id': vocab['id']}
+            if (tag not in md_projections):
+                tk.get_action('tag_create')(context, data)
+
 
 def md_projections():
 
     create_md_projections()
+
     try:
         tag_list = tk.get_action('tag_list')
         md_projections = tag_list(data_dict={'vocabulary_id': 'md_projections'})
@@ -268,6 +281,9 @@ def md_projections():
         #return 'foo'
     except tk.ObjectNotFound:
         return None
+
+
+
 
 
 # Resource type
