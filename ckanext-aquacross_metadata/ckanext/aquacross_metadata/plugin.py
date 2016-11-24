@@ -251,6 +251,8 @@ def create_md_projections():
                     'ETRS89 - ETRS-TM37 -- EPSG-3049',
                     'ETRS89 - ETRS-TM38 -- EPSG-3050',
                     'ETRS89 - ETRS-TM39 -- EPSG-3051',
+                    'EPSG 2190 - Azores Oriental 1940 - UTM zone 26N',
+                    'EPSG 2188 - Azores Occidental 1939 - UTM zone 25N',
                     'WGS 84 -- EPSG-4326'
                    ):
             data = {'name': tag, 'vocabulary_id': vocab['id']}
