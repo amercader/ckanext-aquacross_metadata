@@ -303,7 +303,6 @@ def create_md_resource_types():
 
         for tag in ('   ',
                     'Spatial dataset',
-                    'Spatial dataset',
                     'Spatial dataset series',
                     'Spatial data service'):
             data = {'name': tag, 'vocabulary_id': vocab['id']}
