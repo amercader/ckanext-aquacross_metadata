@@ -271,7 +271,6 @@ def create_md_projections():
             if (tag not in md_projections):
                 tk.get_action('tag_create')(context, data)
 
-
 def md_projections():
 
     create_md_projections()
@@ -283,10 +282,6 @@ def md_projections():
         #return 'foo'
     except tk.ObjectNotFound:
         return None
-
-
-
-
 
 # Resource type
 def create_md_resource_types():
@@ -518,9 +513,6 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
                                         tk.get_converter('convert_to_tags')('md_projections')
                                         ]
         })
-
-
-
         return schema
 
     def create_package_schema(self):
@@ -683,7 +675,6 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
                 tk.get_converter('convert_from_tags')('md_projections'),
                 tk.get_validator('ignore_missing')]
         })
-
         return schema
 
     def is_fallback(self):

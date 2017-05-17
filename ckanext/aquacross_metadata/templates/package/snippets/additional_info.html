@@ -1,8 +1,6 @@
 {% ckan_extends %}
 
 {% block extras %}
-  {#pkg_dict  #}
-{{  iso_values }}
 
   {% if pkg_dict.md_email_address | length  > 0 %}
     <tr>
@@ -11,14 +9,12 @@
     </tr>
   {% endif %}
 
-  <!--
-  {% if pkg_dict.md_metadata_date %}
+  {#% if pkg_dict.md_metadata_date %}
     <tr>
       <th scope="row" class="dataset-label">{{ _("Metadata date") }}</th>
       <td class="dataset-details">{{ pkg_dict.md_metadata_date }}</td>
     </tr>
-  {% endif %}
-  -->
+  {% endif %#}
 
   {% if pkg_dict.md_language | length  > 0 %}
     <tr>
@@ -34,25 +30,19 @@
     </tr>
   {% endif %}
 
-
-   {% if pkg_dict.md_resource_type | length  > 0   %}
+  {% if pkg_dict.md_resource_type | length  > 0   %}
     <tr>
-
       <th scope="row" class="dataset-label">{{ _("Resource type") }}</th>
       <td class="dataset-details">{{ pkg_dict.md_resource_type[0] }}</td>
-  </tr>
+    </tr>
+  {% endif %}
 
- {% endif %}
-
- {% if pkg_dict.md_spatial_representation_type | length  > 0   %}
+  {% if pkg_dict.md_spatial_representation_type | length  > 0   %}
     <tr>
-
       <th scope="row" class="dataset-label">{{ _("Resource type") }}</th>
       <td class="dataset-details">{{ pkg_dict.md_spatial_representation_type[0] }} </td>
-  </tr>
-
- {% endif %}
-
+    </tr>
+  {% endif %}
 
   {% if pkg_dict.license_id   %}
     <tr>
@@ -61,16 +51,12 @@
     </tr>
   {% endif %}
 
-
- {% if pkg_dict.md_classification_code | length  > 0   %}
+  {% if pkg_dict.md_classification_code | length  > 0   %}
     <tr>
-
       <th scope="row" class="dataset-label">{{ _("Classification") }}</th>
       <td class="dataset-details">{{ pkg_dict.md_classification_code[0] }}</td>
-  </tr>
-
- {% endif %}
-
+    </tr>
+  {% endif %}
 
   {% if pkg_dict.md_dataset_creation_date | length  > 0 %}
     <tr>
@@ -93,15 +79,12 @@
     </tr>
   {% endif %}
 
-
   {% if pkg_dict.md_inspire_theme | length  > 0   %}
     <tr>
-
       <th scope="row" class="dataset-label">{{ _("INSPIRE theme") }}</th>
       <td class="dataset-details">{{ pkg_dict.md_inspire_theme[0]   }} </td>
   </tr>
-
- {% endif %}
+  {% endif %}
 
   {% if pkg_dict.md_keywords | length  > 0 %}
     <tr>
@@ -109,12 +92,14 @@
       <td class="dataset-details">{{ pkg_dict.md_keywords }}</td>
     </tr>
   {% endif %}
+
   {% if pkg_dict.md_keywords_vocab_title | length  > 0 %}
     <tr>
       <th scope="row" class="dataset-label">{{ _("Vocabulary title") }}</th>
       <td class="dataset-details">{{ pkg_dict.md_keywords_vocab_title }}</td>
     </tr>
   {% endif %}
+
   {% if pkg_dict.md_keywords_vocab_date | length  > 0 %}
     <tr>
       <th scope="row" class="dataset-label">{{ _("Vocabulary date") }}</th>
@@ -122,16 +107,12 @@
     </tr>
   {% endif %}
 
-
   {% if pkg_dict.md_keywords_vocab_date_type | length  > 0   %}
     <tr>
-
       <th scope="row" class="dataset-label">{{ _("Vocabulary date type") }}</th>
       <td class="dataset-details">{{ pkg_dict.md_keywords_vocab_date_type[0] }}</td>
-  </tr>
-
- {% endif %}
-
+    </tr>
+  {% endif %}
 
   {% if pkg_dict.md_bbox_north | length  > 0 %}
     <tr>
@@ -139,18 +120,21 @@
       <td class="dataset-details">{{ pkg_dict.md_bbox_north }}</td>
     </tr>
   {% endif %}
+
   {% if pkg_dict.md_bbox_south  | length  > 0 %}
     <tr>
       <th scope="row" class="dataset-label">{{ _("Bounding Box - South") }}</th>
       <td class="dataset-details">{{ pkg_dict.md_bbox_south }}</td>
     </tr>
   {% endif %}
+  
   {% if pkg_dict.md_bbox_east | length  > 0 %}
     <tr>
       <th scope="row" class="dataset-label">{{ _("Bounding Box - East") }}</th>
       <td class="dataset-details">{{ pkg_dict.md_bbox_east }}</td>
     </tr>
   {% endif %}
+
   {% if pkg_dict.md_bbox_west | length  > 0 %}
     <tr>
       <th scope="row" class="dataset-label">{{ _("Bounding Box - West") }}</th>
@@ -200,16 +184,12 @@
     </tr>
   {% endif %}
 
-
-{% if pkg_dict.md_responsible_party_role | length  > 0   %}
+  {% if pkg_dict.md_responsible_party_role | length  > 0   %}
     <tr>
-
       <th scope="row" class="dataset-label">{{ _("Responsible party role") }}</th>
       <td class="dataset-details">{{ pkg_dict.md_responsible_party_role[0] }}</td>
-  </tr>
-
- {% endif %}
-
+    </tr>
+  {% endif %}
 
   {% if pkg_dict.md_related_publications | length  > 0 %}
     <tr>
@@ -225,54 +205,41 @@
     </tr>
   {% endif %}
 
-
   {% if pkg_dict.md_aquacross_wp | length  > 0   %}
     <tr>
-
       <th scope="row" class="dataset-label">{{ _("AQUACROSS Work Package") }}</th>
       <td class="dataset-details">{{ pkg_dict.md_aquacross_wp[0] }}</td>
-  </tr>
+    </tr>
+  {% endif %}
 
- {% endif %}
-
-   {% if pkg_dict.md_aquacross_case_study | length  > 0   %}
+  {% if pkg_dict.md_aquacross_case_study | length  > 0   %}
     <tr>
-
       <th scope="row" class="dataset-label">{{ _("AQUACROSS Case Study") }}</th>
       <td class="dataset-details">{{ pkg_dict.md_aquacross_case_study[0] }}</td>
-  </tr>
-
+    </tr>
   {% endif %}
 
   {% if pkg_dict.md_projections | length  > 0   %}
     <tr>
-
       <th scope="row" class="dataset-label">{{ _("Projections") }}</th>
       <td class="dataset-details">{{ pkg_dict.md_projections[0] }}</td>
-  </tr>
-
+    </tr>
   {% endif %}
 
-{% if pkg_dict.spatial | length  > 0   %}
+  {% if pkg_dict.spatial | length  > 0   %}
     <tr>
-
       <th scope="row" class="dataset-label">{{ _("spatial") }}</th>
       <td class="dataset-details">{{ pkg_dict.spatial }}</td>
-  </tr>
-
+    </tr>
   {% endif %}
 
   {% for extra in h.sorted_extras(pkg_dict.extras) %}
     {% set key, value = extra %}
-
     <tr>
-
-
-        {% if value | length > 0 %}
-            <th scope="row" class="dataset-label" property="rdfs:label">{{ _(key) }}</th>
-            <td class="dataset-details" property="rdf:value">{{ value }}</td>
-
-        {% endif %}
+      {% if value | length > 0 %}
+        <th scope="row" class="dataset-label" property="rdfs:label">{{ _(key) }}</th>
+        <td class="dataset-details" property="rdf:value">{{ value }}</td>
+      {% endif %}
     </tr>
   {% endfor %}
 

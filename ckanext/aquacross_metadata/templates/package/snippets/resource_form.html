@@ -18,8 +18,7 @@
   <div style="border:1px solid lightgray; border-radius:5px; background-color:rgb(14, 122, 129); color:white; text-align:left; padding:1px 1px 1px 10px;">
     <span style="font-weight: bold">Distribution</span>
   </div>
-  <div style="padding: 10px 0px 0px 10px">
-  </div>
+  <div style="padding: 10px 0px 0px 10px"></div>
 
   <input name="id" value="{{ data.id }}" type="hidden"/>
 
@@ -35,11 +34,9 @@
       {{ form.input('name', id='field-name', label=_('Name'), placeholder=_(''), value=data.name, error=errors.name, classes=['control-full']) }}
     {% endblock %}
 
-    <!--
-    {% block basic_fields_description %}
+    {#% block basic_fields_description %}
       {{ form.markdown('description', id='field-description', label=_('Description'), placeholder=_('Some useful notes about the data'), value=data.description, error=errors.description) }}
-    {% endblock %}
-    -->
+    {% endblock %#}
 
     {% block basic_fields_format %}
       {% set format_attrs = {'data-module': 'autocomplete', 'data-module-source': '/api/2/util/resource/format_autocomplete?incomplete=?'} %}
