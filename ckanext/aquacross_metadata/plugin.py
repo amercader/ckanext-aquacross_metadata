@@ -365,10 +365,10 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
         tk.add_template_directory(config, 'templates')
         # Register this plugin's fanstatic directory with CKAN.
         # Here, 'fanstatic' is the path to the fanstatic directory
-        # (relative to this plugin.py file), and 'my_fanstatic' is the name
+        # (relative to this plugin.py file), and 'aquacross-metadata' is the name
         # that we'll use to refer to this fanstatic directory from CKAN
         # templates.
-        tk.add_resource('fanstatic', 'my_fanstatic')
+        tk.add_resource('fanstatic', 'aquacross-metadata')
 
     def _modify_package_schema(self, schema):
         schema.update({
