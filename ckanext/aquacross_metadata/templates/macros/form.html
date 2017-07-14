@@ -1,0 +1,30 @@
+{% ckan_extends %}
+
+{#
+Creates all the markup required for an input date element using jQuery datapicker. 
+Handles matching labels to inputs, error messages and other useful elements.
+
+name        - The name of the form parameter.
+id          - The id to use on the input and label. Convention is to prefix with 'field-'.
+label       - The human readable label.
+value       - The value of the input.
+placeholder - Some placeholder text.
+type        - The type of input eg. email, url, date (default: text).
+error       - A list of error strings for the field or just true to highlight the field.
+classes     - An array of classes to apply to the control-group.
+is_required - Boolean of whether this input is requred for the form to validate
+
+Examples:
+
+  {% import 'macros/form.html' as form %}
+  {{ form.input_datepicker('title', label=_('Title'), value=data.title, error=errors.title) }}
+#}
+{% macro input_datepicker(name, id='', label='', value='', placeholder='', type='text', error="", classes=[], attrs={}, is_required=false) %}
+  {%- set extra_html = caller() if caller -%}
+
+  {% call input_block(id or name, label or name, error, classes, extra_html=extra_html, is_required=is_required) %}
+    <input id="{{ id or name }}" type="{{ type }}" name="{{ name }}" value="{{ value | empty_and_escape }}" placeholder="{{ placeholder }}" {{ attributes(attrs) }} 
+           data-module="aquacross_metadata_datepicker" data-module-id="{{ id or name }}" data-module-value="{{ value | empty_and_escape }}" 
+           autocomplete="off" />
+  {% endcall %}
+{% endmacro %}
