@@ -283,16 +283,6 @@
   {% set user_is_sysadmin = h.check_access('sysadmin') %}
   {% set show_organizations_selector = organizations_available %}
   {% set show_visibility_selector = dataset_has_organization or (organizations_available and (user_is_sysadmin or dataset_is_draft)) %}
-  <div class="control-group">
-    <label class="control-label" for="field-md_aquacross_wp">{{ _("AQUACROSS Work Package") }}</label>
-    <div class="controls">
-      <select id="field-md_aquacross_wp" name="md_aquacross_wp" data-module="autocomplete">
-        {% for md_aquacross_wp in h.md_aquacross_wps()  %}
-          <option value="{{ md_aquacross_wp }}" {% if md_aquacross_wp in data.get('md_aquacross_wp', []) %}selected="selected"{% endif %}>{{ md_aquacross_wp }}</option>
-        {% endfor %}
-      </select>
-    </div>
-  </div>
   {% if show_visibility_selector %}
     {% block package_metadata_fields_visibility %}
       <div class="control-group">

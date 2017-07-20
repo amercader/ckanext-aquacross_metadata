@@ -155,38 +155,6 @@ def md_responsible_party_roles():
     except tk.ObjectNotFound:
         return None
 
-# AQUACROSS WP
-def create_md_aquacross_wps():
-    user = tk.get_action('get_site_user')({'ignore_auth': True}, {})
-    context = {'user': user['name']}
-    print("create_md_aquacross_wps")
-    try:
-        data = {'id': 'md_aquacross_wps'}
-        #tk.get_action('vocabulary_delete')(context, data)
-        tk.get_action('vocabulary_show')(context, data)
-    except tk.ObjectNotFound:
-        data = {'name': 'md_aquacross_wps'}
-        vocab = tk.get_action('vocabulary_create')(context, data)
-        for tag in ('   ',
-                    'WP1',
-                    'WP2',
-                    'WP3',
-                    'WP4',
-                    'WP5',
-                    'WP6',
-                    'WP7',
-                    'WP8'):
-            data = {'name': tag, 'vocabulary_id': vocab['id']}
-            tk.get_action('tag_create')(context, data)
-
-def md_aquacross_wps():
-    create_md_aquacross_wps()
-    try:
-        tag_list = tk.get_action('tag_list')
-        md_aquacross_wps = tag_list(data_dict={'vocabulary_id': 'md_aquacross_wps'})
-        return md_aquacross_wps
-    except tk.ObjectNotFound:
-        return None
 
 # AQUACROSS Case Study
 def create_md_aquacross_case_studies():
@@ -353,7 +321,6 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
                 'md_classification_codes': md_classification_codes,
                 'md_spatial_representation_types': md_spatial_representation_types,
                 'md_responsible_party_roles': md_responsible_party_roles,
-                'md_aquacross_wps': md_aquacross_wps,
                 'md_aquacross_case_studies': md_aquacross_case_studies,
                 'md_projections': md_projections,
                 'md_resource_types': md_resource_types,
@@ -496,11 +463,6 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
         schema.update({
             'md_limitations_on_puclic_use': [tk.get_validator('ignore_missing'),
                                              tk.get_converter('convert_to_extras')]
-        })
-        schema.update({
-            'md_aquacross_wp': [tk.get_validator('ignore_missing'),
-                                tk.get_converter('convert_to_tags')('md_aquacross_wps')
-            ]
         })
         schema.update({
             'md_aquacross_case_study': [tk.get_validator('ignore_missing'),
@@ -660,11 +622,6 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
             'md_limitations_on_puclic_use': [tk.get_converter('convert_from_extras'),
                                              tk.get_validator('ignore_missing')]
         })
-        schema.update({
-            'md_aquacross_wp': [
-                tk.get_converter('convert_from_tags')('md_aquacross_wps'),
-                tk.get_validator('ignore_missing')]
-            })
         schema.update({
             'md_aquacross_case_study': [
                 tk.get_converter('convert_from_tags')('md_aquacross_case_studies'),
