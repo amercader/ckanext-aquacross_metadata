@@ -13,263 +13,9 @@
   {{ form.markdown('notes', id='field-notes', label=_('Description'), placeholder=_('eg. Some useful notes about the data'), value=data.notes, error=errors.notes) }}
 {% endblock %#}
 
-<!-- Metadata contact point -->
-<div style="border:1px solid lightgray; border-radius:5px; background-color:rgb(14, 122, 129); color:white; text-align:left; padding:1px 1px 1px 10px;">
-  <span style="font-weight: bold">Metadata contact point</span>
-</div>
-<div style="padding: 10px 0px 0px 10px">
-{% block package_basic_fields_org %}
-  {# if we have a default group then this wants remembering #}
-  {% if data.group_id %}
-    <input type="hidden" name="groups__0__id" value="{{ data.group_id }}" />
-  {% endif %}
-
-  {% set dataset_is_draft = data.get('state', 'draft').startswith('draft') or data.get('state', 'none') ==  'none' %}
-  {% set dataset_has_organization = data.owner_org or data.group_id %}
-  {% set organizations_available = h.organizations_available('create_dataset') %}
-  {% set user_is_sysadmin = h.check_access('sysadmin') %}
-  {% set show_organizations_selector = organizations_available %}
-  {% set show_visibility_selector = dataset_has_organization or (organizations_available and (user_is_sysadmin or dataset_is_draft)) %}
-
-  {% if show_organizations_selector %}
-    {% set existing_org = data.owner_org or data.group_id %}
-    <div class="control-group">
-      <label for="field-organizations" class="control-label">{{ _('Organization') }}</label>
-      <div class="controls">
-        <select id="field-organizations" name="owner_org" data-module="autocomplete">
-          {% if h.check_config_permission('create_unowned_dataset') %}
-             <option value="" {% if not selected_org and data.id %} selected="selected" {% endif %}>{{ _('No organization') }}</option>
-          {% endif %}
-          {% for organization in organizations_available %}
-            {# get out first org from users list only if there is not an existing org #}
-            {% set selected_org = (existing_org and existing_org == organization.id) or (not existing_org and not data.id and organization.id == organizations_available[0].id) %}
-            <option value="{{ organization.id }}" {% if selected_org %} selected="selected" {% endif %}>{{ organization.display_name }}</option>
-          {% endfor %}
-        </select>
-      </div>
-    </div>
-  {% endif %}
-{% endblock %}
-
-{{ form.input('md_email_address', label=_('E-mail'), id='field-md_email_address', placeholder=_('Add email address'), value=data.md_email_address, error=errors.md_email_address, classes=['control-medium']) }}
-{#{ form.input('md_metadata_date', label=_('Metadata date'), id='field-md_metadata_date', placeholder=_('Date (YYYY-MM-DD)'), value=data.md_metadata_date, error=errors.md_metadata_date, classes=['control-medium']) }#}
-{{ form.hidden(name='md_language', value='Eng') }}
-</div>
-
-<!-- Identification -->
-<div style="border:1px solid lightgray; border-radius:5px; background-color:rgb(14, 122, 129); color:white; text-align:left; padding:1px 1px 1px 10px;">
-  <span style="font-weight: bold">Identification</span>
-</div>
-<div style="padding: 10px 0px 0px 10px">
-  {{ form.input('title', id='field-title', label=_('Resource title'), placeholder=_('eg. A descriptive title'), value=data.title, error=errors.title, classes=['control-full', 'control-medium'], attrs={'data-module': 'slug-preview-target'}) }}
-  {% block package_basic_fields_url %}
-    {% set prefix = h.url_for(controller='package', action='read', id='') %}
-    {% set domain = h.url_for(controller='package', action='read', id='', qualified=true) %}
-    {% set domain = domain|replace("http://", "")|replace("https://", "") %}
-    {% set attrs = {'data-module': 'slug-preview-slug', 'data-module-prefix': domain, 'data-module-placeholder': '<dataset>'} %}
-    {{ form.prepend('name', id='field-name', label=_('URL'), prepend=prefix, placeholder=_('eg. my-dataset'), value=data.name, error=errors.name, attrs=attrs, is_required=true) }}
-  {% endblock %}
-
-  {{ form.textarea('md_abstract', id='field-md_abstract', label=_('Resource abstract'), placeholder=_('Add a brief narrative summary of the content of the data'), value=data.md_abstract, error=errors.md_abstract) }}
-
-  {{ form.input_datepicker('md_dataset_creation_date', label=_('Creation date'), id='field-md_dataset_creation_date', placeholder=_('YYYY-MM-DD'), value=data.md_dataset_creation_date, error=errors.md_dataset_creation_date, classes=['control-medium']) }}
-  {{ form.input_datepicker('md_dataset_publication_date', label=_('Publication date'), id='field-md_dataset_publication_date', placeholder=_('YYYY-MM-DD'), value=data.md_dataset_publication_date, error=errors.md_dataset_publication_date, classes=['control-medium']) }}
-  {{ form.input_datepicker('md_dataset_last_revision_date', label=_('Last revision date'), id='field-md_dataset_last_revision_date', placeholder=_('YYYY-MM-DD'), value=data.md_dataset_last_revision_date, error=errors.md_dataset_last_revision_date, classes=['control-medium']) }}
-
-  <div class="control-group">
-    <label class="control-label" for="field-md_resource_type">{{ _("Resource type") }}</label>
-    <div class="controls">
-      <select id="field-md_resource_type" name="md_resource_type" data-module="autocomplete">
-        {% for md_resource_type in h.md_resource_types()  %}
-          <option value="{{ md_resource_type }}" {% if md_resource_type in data.get('md_resource_type', []) %}selected="selected"{% endif %}>{{ md_resource_type }}</option>
-        {% endfor %}
-      </select>
-    </div>
-  </div>
-
-  <div class="control-group">
-    <label class="control-label" for="field-md_spatial_representation_type">{{ _("Spatial representation type") }}</label>
-    <div class="controls">
-      <select id="field-md_spatial_representation_type" name="md_spatial_representation_type" data-module="autocomplete">
-        {% for md_spatial_representation_type in h.md_spatial_representation_types()  %}
-          <option value="{{ md_spatial_representation_type }}" {% if md_spatial_representation_type in data.get('md_spatial_representation_type', []) %}selected="selected"{% endif %}>{{ md_spatial_representation_type }}</option>
-        {% endfor %}
-      </select>
-    </div>
-  </div>
-
-  {{ form.input('md_limitations_on_puclic_use', label=_('Limitations on public use'), id='field-md_limitations_on_puclic_use', placeholder=_(''), value=data.md_limitations_on_puclic_use, error=errors.md_limitations_on_puclic_use, classes=['control-medium']) }}
-
-  {% block package_basic_fields_license %}
-    <div class="control-group">
-    {% set error = errors.license_id %}
-    <label class="control-label" for="field-license">{{ _("License") }}</label>
-    <div class="controls">
-      <select id="field-license" name="license_id" style="width:520px" data-module="autocomplete">
-        {% set existing_license_id = data.get('license_id') %}
-        {% for license_id, license_desc in h.license_options(existing_license_id) %}
-          <option value="{{ license_id }}" {% if existing_license_id == license_id %}selected="selected"{% endif %}>{{ license_desc }}</option>
-        {% endfor %}
-      </select>
-      {% if error %}<span class="error-block">{{ error }}</span>{% endif %}
-      <span class="info-block info-block-small">
-        <i class="icon-info-sign"></i>License definitions and additional information can be found <a target="_blank" href="/license">here</a>
-      </span>
-    </div>
-  </div>
-  {% endblock %}
-</div>
-
-<!-- Classification of data and services -->
-<div style="border:1px solid lightgray; border-radius:5px; background-color:rgb(14, 122, 129); color:white; text-align:left; padding:1px 1px 1px 10px;">
-  <span style="font-weight: bold">Classification of data and services</span>
-</div>
-<div style="padding: 10px 0px 0px 10px">
-  <div class="control-group">
-    <label class="control-label" for="field-md_classification_code">{{ _("Topic category") }}</label>
-    <div class="controls">
-      <select id="field-md_classification_code" name="md_classification_code" data-module="autocomplete">
-        {% for md_classification_code in h.md_classification_codes()  %}
-          <option value="{{ md_classification_code }}" {% if md_classification_code in data.get('md_classification_code', []) %}selected="selected"{% endif %}>{{ md_classification_code }}</option>
-        {% endfor %}
-      </select>
-    </div>
-  </div>
-</div>
-
-<!-- Descriptive Keywords -->
-<div style="border:1px solid lightgray; border-radius:5px; background-color:rgb(14, 122, 129); color:white; text-align:left; padding:1px 1px 1px 10px;">
-  <span style="font-weight: bold">Descriptive Keywords</span>
-</div>
-<div style="padding: 10px 0px 0px 10px">
-  <div class="control-group">
-    <label class="control-label" for="field-md_inspire_theme">{{ _("INSPIRE theme") }}</label>
-    <div class="controls">
-      <select id="field-md_inspire_theme" name="md_inspire_theme" data-module="autocomplete">
-        {% for md_inspire_theme in h.md_inspire_themes()  %}
-          <option value="{{ md_inspire_theme }}" {% if md_inspire_theme in data.get('md_inspire_theme', []) %}selected="selected"{% endif %}>{{ md_inspire_theme }}</option>
-        {% endfor %}
-      </select>
-    </div>
-  </div>
-
-  <div style="text-align: center; width: 100%">
-      <span><hr style="width:100%"></span>
-  </div>
-
-  {% call form.input('md_keywords', label=_('Free keywords'), id='field-md_keywords', placeholder=_(''), value=data.md_keywords, error=errors.md_keywords, classes=['control-medium']) %}
-    <span class="info-block info-block-small">
-      <i class="icon-info-sign"></i>
-        {{ _('Free text (use a comma to separate keywords)') }}
-    </span>
-  {% endcall %}
-
-  {{ form.input('md_keywords_vocab_title', label=_('Vocabulary title'), id='field-md_keywords_vocab_title', placeholder=_(''), value=data.md_keywords_vocab_title, error=errors.md_keywords_vocab_title, classes=['control-medium']) }}
-  {{ form.input_datepicker('md_keywords_vocab_date', label=_('Vocabulary date'), id='field-md_keywords_vocab_date', placeholder=_('YYYY-MM-DD'), value=data.md_keywords_vocab_date, error=errors.md_keywords_vocab_date, classes=['control-medium']) }}
-  <div class="control-group">
-    <label class="control-label" for="field-md_keywords_vocab_date_type">{{ _("Vocabulary date type") }}</label>
-    <div class="controls">
-      <select id="field-md_keywords_vocab_date_type" name="md_keywords_vocab_date_type" data-module="autocomplete" >
-        {% for md_keywords_vocab_date_type in h.md_keywords_vocab_date_types()  %}
-          <option value="{{ md_keywords_vocab_date_type }}" {% if md_keywords_vocab_date_type in data.get('md_keywords_vocab_date_type', []) %}selected="selected"{% endif %}>{{ md_keywords_vocab_date_type }}</option>
-        {% endfor %}
-      </select>
-    </div>
-  </div>
-</div>
-
-<!-- Geographic extent section -->
-{% resource 'aquacross-metadata/bounding_box.js' %}
-<div style="border:1px solid lightgray; border-radius:5px; background-color:rgb(14, 122, 129); color:white; text-align:left; padding:1px 1px 1px 10px;">
-  <span style="font-weight: bold">Geographic extent</span>
-</div>
-
-<div style="padding: 10px 0px 0px 10px">
-  {% set attrs_text = {'data-module':'spatial_bbox_inputs', 'readonly': 'readonly'} %}
-  <div class="control-group">
-    <label class="control-label" for="field-md_inspire_theme">{{ _("Extent area") }}</label>
-    <div class="controls">
-    <select id="field-md_aquacross_case_study" name="md_aquacross_case_study" style="width:450px" data-module="case_study_list">
-    </select>
-    <span class="info-block info-block-small">
-      <i class="icon-info-sign"></i>
-      {{ _('Select a predefined extent, or select a custom extent and enter in the fields below') }}
-    </span>
-    </div>
-  </div>
-  {{ form.input('md_bbox_north', label=_('North'), id='field-md_bbox_north', placeholder=_(''), value=data.md_bbox_north, error=errors.md_bbox_north, classes=['control-medium'],attrs=attrs_text) }}
-  {{ form.input('md_bbox_south', label=_('South'), id='field-md_bbox_south', placeholder=_(''), value=data.md_bbox_south, error=errors.md_bbox_south, classes=['control-medium'],attrs=attrs_text) }}
-  {{ form.input('md_bbox_east', label=_('East'), id='field-md_bbox_east', placeholder=_(''), value=data.md_bbox_east, error=errors.md_bbox_east, classes=['control-medium'],attrs=attrs_text) }}
-  {% call form.input('md_bbox_west', label=_('West'), id='field-md_bbox_west', placeholder=_(''), value=data.md_bbox_west, error=errors.md_bbox_west, classes=['control-medium'],attrs=attrs_text) %}
-    <span class="info-block info-block-small">
-      <i class="icon-info-sign"></i>
-      {{ _('Geographic Lat/Lon Bounding Box') }}
-    </span>
-  {% endcall %}
-</div>
-
-<!-- Spatial Reference System -->
-<div style="border:1px solid lightgray; border-radius:5px; background-color:rgb(14, 122, 129); color:white; text-align:left; padding:1px 1px 1px 10px;">
-  <span style="font-weight: bold">Spatial Reference System</span>
-</div>
-<div style="padding: 10px 0px 20px 10px">
-  <label class="control-label" for="md_projections">{{ _("Projection") }}</label>
-  <select id="field-md_projections" name="md_projections"  style="width:400px" data-module="autocomplete">
-    {% for md_projections in h.md_projections()  %}
-      <option value="{{ md_projections }}" {% if md_projections in data.get('md_projections', []) %}selected="selected"{% endif %}>{{ md_projections }}</option>
-    {% endfor %}
-  </select>
-</div>
-
-<!-- Temporal Extent section -->
-<div style="border:1px solid lightgray; border-radius:5px; background-color:rgb(14, 122, 129); color:white; text-align:left; padding:1px 1px 1px 10px;">
-  <span style="font-weight: bold">Temporal Extent</span>
-</div>
-<div style="padding: 10px 0px 0px 10px">
-  {{ form.input_datepicker('md_temporal_date', label=_('Individual date'), id='field-md_temporal_date', placeholder=_('YYYY-MM-DD'), value=data.md_temporal_date, error=errors.md_temporal_date, classes=['control-medium']) }}
-  <div style="padding: 0px 0px 15px 200px">or</div>
-  {{ form.input_datepicker('md_temporal_start_date', label=_('Start date'), id='field-md_temporal_start_date', placeholder=_('YYYY-MM-DD'), value=data.md_temporal_start_date, error=errors.md_temporal_start_date, classes=['control-medium']) }}
-  {{ form.input_datepicker('md_temporal_end_date', label=_('End date'), id='field-md_temporal_end_date', placeholder=_('YYYY-MM-DD'), value=data.md_temporal_end_date, error=errors.md_temporal_end_date, classes=['control-medium']) }}    
-</div>
-
-<!-- Quality and validity section -->
-<div style="border:1px solid lightgray; border-radius:5px; background-color:rgb(14, 122, 129); color:white; text-align:left; padding:1px 1px 1px 10px;">
-  <span style="font-weight: bold">Quality and validity</span>
-</div>
-<div style="padding: 10px 0px 0px 10px"> 
-  {{ form.textarea('md_lineage', id='field-md_lineage', label=_('Lineage'), placeholder=_('This is a statement on process history and/or overall quality of the spatial data set. Where appropriate it may include a statement whether the data set has been validated or quality assured, whether it is the official version (if multiple versions exist), and whether it has legal validity.'), value=data.md_lineage, error=errors.md_lineage) }}
-</div>
- 
-<!-- Responsible party -->
-<div style="border:1px solid lightgray; border-radius:5px; background-color:rgb(14, 122, 129); color:white; text-align:left; padding:1px 1px 1px 10px;">
-  <span style="font-weight: bold">Responsible party</span>
-</div>
-<div style="padding: 10px 0px 0px 10px">
-  {{ form.input('md_responsible_party_name', label=_('Responsible Party'), id='field-md_responsible_party_name', placeholder=_(''), value=data.md_responsible_party_name, error=errors.md_responsible_party_name, classes=['control-medium']) }}
-  {{ form.input('md_responsible_party_email', label=_('E-mail'), id='field-md_responsible_party_email', placeholder=_(''), value=data.md_responsible_party_email, error=errors.md_responsible_party_email, classes=['control-medium']) }}
-  <div class="control-group">
-    <label class="control-label" for="field-md_responsible_party_role">{{ _("Role") }}</label>
-    <div class="controls">
-      <select id="field-md_responsible_party_role" name="md_responsible_party_role" data-module="autocomplete">
-        {% for md_responsible_party_role in h.md_responsible_party_roles()  %}
-          <option value="{{ md_responsible_party_role }}" {% if md_responsible_party_role in data.get('md_responsible_party_role', []) %}selected="selected"{% endif %}>{{ md_responsible_party_role }}</option>
-        {% endfor %}
-      </select>
-    </div>
-  </div>
-
-  {% call
-    form.textarea('md_related_publications', id='field-md_related_publications', label=_('Related Publications'), placeholder=_(''), value=data.md_related_publications, error=errors.md_related_publications) %}
-    <span class="info-block info-block-small">
-      <i class="icon-info-sign"></i>
-      {{ _('Add reference to publication in Chicago Manual Style') }}
-    </span>
-  {% endcall %}
-</div>
-
 <!-- Visibility -->
 <div style="border:1px solid lightgray; border-radius:5px; background-color:rgb(14, 122, 129); color:white; text-align:left; padding:1px 1px 1px 10px;">
-  <span style="font-weight: bold">Other</span>
+  <span style="font-weight: bold">Visibility</span>
 </div>
 <div style="padding: 10px 0px 0px 10px">
 {% block package_basic_fields_visibility %}
@@ -279,6 +25,7 @@
   {% set user_is_sysadmin = h.check_access('sysadmin') %}
   {% set show_organizations_selector = organizations_available %}
   {% set show_visibility_selector = dataset_has_organization or (organizations_available and (user_is_sysadmin or dataset_is_draft)) %}
+
   {% if show_visibility_selector %}
     {% block package_metadata_fields_visibility %}
       <div class="control-group">
@@ -306,6 +53,264 @@
     </div>
   {% endif %}
 {% endblock %}
+</div>
+
+<!-- Metadata - Contact point -->
+<div style="border:1px solid lightgray; border-radius:5px; background-color:rgb(14, 122, 129); color:white; text-align:left; padding:1px 1px 1px 10px;">
+  <span style="font-weight: bold">AQUACROSS contact point</span>
+</div>
+<div style="padding: 10px 0px 0px 10px">
+{% block package_basic_fields_org %}
+  {# if we have a default group then this wants remembering #}
+  {% if data.group_id %}
+    <input type="hidden" name="groups__0__id" value="{{ data.group_id }}" />
+  {% endif %}
+
+  {% set dataset_is_draft = data.get('state', 'draft').startswith('draft') or data.get('state', 'none') ==  'none' %}
+  {% set dataset_has_organization = data.owner_org or data.group_id %}
+  {% set organizations_available = h.organizations_available('create_dataset') %}
+  {% set user_is_sysadmin = h.check_access('sysadmin') %}
+  {% set show_organizations_selector = organizations_available %}
+  {% set show_visibility_selector = dataset_has_organization or (organizations_available and (user_is_sysadmin or dataset_is_draft)) %}
+
+  {% if show_organizations_selector %}
+    {% set existing_org = data.owner_org or data.group_id %}
+    <div class="control-group">
+      <label for="field-organizations" class="control-label">{{ _('Organisation') }}</label>
+      <div class="controls">
+        <select id="field-organizations" name="owner_org" data-module="autocomplete">
+          {% if h.check_config_permission('create_unowned_dataset') %}
+             <option value="" {% if not selected_org and data.id %} selected="selected" {% endif %}>{{ _('No organization') }}</option>
+          {% endif %}
+          {% for organization in organizations_available %}
+            {# get out first org from users list only if there is not an existing org #}
+            {% set selected_org = (existing_org and existing_org == organization.id) or (not existing_org and not data.id and organization.id == organizations_available[0].id) %}
+            <option value="{{ organization.id }}" {% if selected_org %} selected="selected" {% endif %}>{{ organization.display_name }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}
+
+{{ form.input('md_email_address', label=_('E-mail'), id='field-md_email_address', placeholder=_('Add email address'), value=data.md_email_address, error=errors.md_email_address, classes=['control-medium']) }}
+{#{ form.input('md_metadata_date', label=_('Metadata date'), id='field-md_metadata_date', placeholder=_('Date (YYYY-MM-DD)'), value=data.md_metadata_date, error=errors.md_metadata_date, classes=['control-medium']) }#}
+{{ form.hidden(name='md_language', value='Eng') }}
+</div>
+
+<!-- Responsible party -->
+<div style="border:1px solid lightgray; border-radius:5px; background-color:rgb(14, 122, 129); color:white; text-align:left; padding:1px 1px 1px 10px;">
+  <span style="font-weight: bold">Responsible party for this dataset</span>
+</div>
+<div style="padding: 10px 0px 0px 10px">
+  {{ form.input('md_responsible_party_name', label=_('Organisation'), id='field-md_responsible_party_name', placeholder=_(''), value=data.md_responsible_party_name, error=errors.md_responsible_party_name, classes=['control-medium']) }}
+  {{ form.input('md_responsible_party_email', label=_('E-mail'), id='field-md_responsible_party_email', placeholder=_(''), value=data.md_responsible_party_email, error=errors.md_responsible_party_email, classes=['control-medium']) }}
+  <div class="control-group">
+    <label class="control-label" for="field-md_responsible_party_role">{{ _("Role") }}</label>
+    <div class="controls">
+      <select id="field-md_responsible_party_role" name="md_responsible_party_role" data-module="autocomplete">
+        {% for md_responsible_party_role in h.md_responsible_party_roles()  %}
+          <option value="{{ md_responsible_party_role }}" {% if md_responsible_party_role in data.get('md_responsible_party_role', []) %}selected="selected"{% endif %}>{{ md_responsible_party_role }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <span class="info-block info-block-small">
+      <i class="icon-info-sign"></i>
+      {{ _('Who owns, distibutes, is a custodian, etc. of this dataset') }}
+    </span>
+  </div>
+</div>
+
+<!-- Identification -->
+<div style="border:1px solid lightgray; border-radius:5px; background-color:rgb(14, 122, 129); color:white; text-align:left; padding:1px 1px 1px 10px;">
+  <span style="font-weight: bold">Identification</span>
+</div>
+<div style="padding: 10px 0px 0px 10px">
+  {{ form.input('title', id='field-title', label=_('Title'), placeholder=_('eg. A descriptive title'), value=data.title, error=errors.title, classes=['control-full', 'control-medium'], attrs={'data-module': 'slug-preview-target'}) }}
+  {% block package_basic_fields_url %}
+    {% set prefix = h.url_for(controller='package', action='read', id='') %}
+    {% set domain = h.url_for(controller='package', action='read', id='', qualified=true) %}
+    {% set domain = domain|replace("http://", "")|replace("https://", "") %}
+    {% set attrs = {'data-module': 'slug-preview-slug', 'data-module-prefix': domain, 'data-module-placeholder': '<dataset>'} %}
+    {{ form.prepend('name', id='field-name', label=_('URL'), prepend=prefix, placeholder=_('eg. my-dataset'), value=data.name, error=errors.name, attrs=attrs, is_required=true) }}
+  {% endblock %}
+
+  {{ form.textarea('md_abstract', id='field-md_abstract', label=_('Abstract'), placeholder=_('Add a brief narrative summary of the content of the data'), value=data.md_abstract, error=errors.md_abstract) }}
+
+  {{ form.input_datepicker('md_dataset_creation_date', label=_('Creation date'), id='field-md_dataset_creation_date', placeholder=_('YYYY-MM-DD'), value=data.md_dataset_creation_date, error=errors.md_dataset_creation_date, classes=['control-medium']) }}
+  {{ form.input_datepicker('md_dataset_publication_date', label=_('Publication date'), id='field-md_dataset_publication_date', placeholder=_('YYYY-MM-DD'), value=data.md_dataset_publication_date, error=errors.md_dataset_publication_date, classes=['control-medium']) }}
+  {{ form.input_datepicker('md_dataset_last_revision_date', label=_('Last revision date'), id='field-md_dataset_last_revision_date', placeholder=_('YYYY-MM-DD'), value=data.md_dataset_last_revision_date, error=errors.md_dataset_last_revision_date, classes=['control-medium']) }}
+
+  {{ form.textarea('md_lineage', id='field-md_lineage', label=_('Lineage'), placeholder=_('This is a statement on process history and/or overall quality of the data. Where appropriate it may include a statement whether the data has been validated or quality assured, whether it is the official version (if multiple versions exist), and whether it has legal validity.'), value=data.md_lineage, error=errors.md_lineage) }}
+
+  {% call
+    form.textarea('md_related_publications', id='field-md_related_publications', label=_('Related Publications'), placeholder=_(''), value=data.md_related_publications, error=errors.md_related_publications) %}
+    <span class="info-block info-block-small">
+      <i class="icon-info-sign"></i>
+      {{ _('Add reference to publication in Chicago Manual Style') }}
+    </span>
+  {% endcall %}
+
+  {{ form.input('md_limitations_on_puclic_use', label=_('Limitations on public use'), id='field-md_limitations_on_puclic_use', placeholder=_(''), value=data.md_limitations_on_puclic_use, error=errors.md_limitations_on_puclic_use, classes=['control-medium']) }}
+
+  {% block package_basic_fields_license %}
+    <div class="control-group">
+    {% set error = errors.license_id %}
+    <label class="control-label" for="field-license">{{ _("License") }}</label>
+    <div class="controls">
+      <select id="field-license" name="license_id" style="width:520px" data-module="autocomplete">
+        {% set existing_license_id = data.get('license_id') %}
+        {% for license_id, license_desc in h.license_options(existing_license_id) %}
+          <option value="{{ license_id }}" {% if existing_license_id == license_id %}selected="selected"{% endif %}>{{ license_desc }}</option>
+        {% endfor %}
+      </select>
+      {% if error %}<span class="error-block">{{ error }}</span>{% endif %}
+      <span class="info-block info-block-small">
+        <i class="icon-info-sign"></i>
+        License definitions and additional information can be found 
+        <a target="_blank" href="/license">here</a>
+      </span>
+    </div>
+  </div>
+  {% endblock %}
+</div>
+
+<!-- Keywords -->
+<div style="border:1px solid lightgray; border-radius:5px; background-color:rgb(14, 122, 129); color:white; text-align:left; padding:1px 1px 1px 10px;">
+  <span style="font-weight: bold">Keywords</span>
+</div>
+<div style="padding: 10px 0px 0px 10px">
+  {% call form.input('md_keywords', label=_('Free keywords'), id='field-md_keywords', placeholder=_(''), value=data.md_keywords, error=errors.md_keywords, classes=['control-medium']) %}
+    <span class="info-block info-block-small">
+      <i class="icon-info-sign"></i>
+        {{ _('Free text (use a comma to separate keywords)') }}
+    </span>
+  {% endcall %}
+
+  {{ form.input('md_keywords_vocab_title', label=_('Vocabulary title'), id='field-md_keywords_vocab_title', placeholder=_(''), value=data.md_keywords_vocab_title, error=errors.md_keywords_vocab_title, classes=['control-medium']) }}
+  {{ form.input_datepicker('md_keywords_vocab_date', label=_('Vocabulary date'), id='field-md_keywords_vocab_date', placeholder=_('YYYY-MM-DD'), value=data.md_keywords_vocab_date, error=errors.md_keywords_vocab_date, classes=['control-medium']) }}
+  <div class="control-group">
+    <label class="control-label" for="field-md_keywords_vocab_date_type">{{ _("Vocabulary date type") }}</label>
+    <div class="controls">
+      <select id="field-md_keywords_vocab_date_type" name="md_keywords_vocab_date_type" data-module="autocomplete" >
+        {% for md_keywords_vocab_date_type in h.md_keywords_vocab_date_types()  %}
+          <option value="{{ md_keywords_vocab_date_type }}" {% if md_keywords_vocab_date_type in data.get('md_keywords_vocab_date_type', []) %}selected="selected"{% endif %}>{{ md_keywords_vocab_date_type }}</option>
+        {% endfor %}
+      </select>
+      <span class="info-block info-block-small">
+        <i class="icon-info-sign"></i>
+          {{ _('If keywords orginate from a vocabulary, please enter vocabulary title and date') }}
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- Classification -->
+<div style="border:1px solid lightgray; border-radius:5px; background-color:rgb(14, 122, 129); color:white; text-align:left; padding:1px 1px 1px 10px;">
+  <span style="font-weight: bold">Classification</span>
+</div>
+<div style="padding: 10px 0px 0px 10px">
+  <div class="control-group">
+    <label class="control-label" for="field-md_classification_code">{{ _("Topic category") }}</label>
+    <div class="controls">
+      <select id="field-md_classification_code" name="md_classification_code" data-module="autocomplete">
+        {% for md_classification_code in h.md_classification_codes()  %}
+          <option value="{{ md_classification_code }}" {% if md_classification_code in data.get('md_classification_code', []) %}selected="selected"{% endif %}>{{ md_classification_code }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <label class="control-label" for="field-md_inspire_theme">{{ _("INSPIRE theme") }}</label>
+    <div class="controls">
+      <select id="field-md_inspire_theme" name="md_inspire_theme" data-module="autocomplete">
+        {% for md_inspire_theme in h.md_inspire_themes()  %}
+          <option value="{{ md_inspire_theme }}" {% if md_inspire_theme in data.get('md_inspire_theme', []) %}selected="selected"{% endif %}>{{ md_inspire_theme }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- Spatial Information -->
+<div style="border:1px solid lightgray; border-radius:5px; background-color:rgb(14, 122, 129); color:white; text-align:left; padding:1px 1px 1px 10px;">
+  <span style="font-weight: bold">Spatial Information</span>
+</div>
+<div style="padding: 10px 0px 0px 10px">
+  <div class="control-group">
+    <label class="control-label" for="field-md_resource_type">{{ _("Resource type") }}</label>
+    <div class="controls">
+      <select id="field-md_resource_type" name="md_resource_type" data-module="autocomplete">
+        {% for md_resource_type in h.md_resource_types()  %}
+          <option value="{{ md_resource_type }}" {% if md_resource_type in data.get('md_resource_type', []) %}selected="selected"{% endif %}>{{ md_resource_type }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <label class="control-label" for="field-md_spatial_representation_type">{{ _("Spatial representation type") }}</label>
+    <div class="controls">
+      <select id="field-md_spatial_representation_type" name="md_spatial_representation_type" data-module="autocomplete">
+        {% for md_spatial_representation_type in h.md_spatial_representation_types()  %}
+          <option value="{{ md_spatial_representation_type }}" {% if md_spatial_representation_type in data.get('md_spatial_representation_type', []) %}selected="selected"{% endif %}>{{ md_spatial_representation_type }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+
+  <div class="control-group">
+    <label class="control-label" for="md_projections">{{ _("Projection") }}</label>
+    <div class="controls">
+      <select id="field-md_projections" name="md_projections"  style="width:400px" data-module="autocomplete">
+        {% for md_projections in h.md_projections()  %}
+          <option value="{{ md_projections }}" {% if md_projections in data.get('md_projections', []) %}selected="selected"{% endif %}>{{ md_projections }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </div>
+</div>
+
+<!-- Spatial extents section -->
+{% resource 'aquacross-metadata/bounding_box.js' %}
+<div style="border:1px solid lightgray; border-radius:5px; background-color:rgb(14, 122, 129); color:white; text-align:left; padding:1px 1px 1px 10px;">
+  <span style="font-weight: bold">Spatial extents</span>
+</div>
+<div style="padding: 10px 0px 0px 10px">
+  {% set attrs_text = {'data-module':'spatial_bbox_inputs', 'readonly': 'readonly'} %}
+  <div class="control-group">
+    <div class="controls">
+     <select id="field-md_aquacross_case_study" name="md_aquacross_case_study" style="width:450px" data-module="case_study_list">
+      </select>
+      <span class="info-block info-block-small">
+        <i class="icon-info-sign"></i>
+        {{ _('Select a predefined extent, or select a custom extent and enter in the fields below') }}
+      </span>
+    </div>
+  </div>
+  {{ form.input('md_bbox_north', label=_('North'), id='field-md_bbox_north', placeholder=_(''), value=data.md_bbox_north, error=errors.md_bbox_north, classes=['control-medium'],attrs=attrs_text) }}
+  {{ form.input('md_bbox_south', label=_('South'), id='field-md_bbox_south', placeholder=_(''), value=data.md_bbox_south, error=errors.md_bbox_south, classes=['control-medium'],attrs=attrs_text) }}
+  {{ form.input('md_bbox_east', label=_('East'), id='field-md_bbox_east', placeholder=_(''), value=data.md_bbox_east, error=errors.md_bbox_east, classes=['control-medium'],attrs=attrs_text) }}
+  {% call form.input('md_bbox_west', label=_('West'), id='field-md_bbox_west', placeholder=_(''), value=data.md_bbox_west, error=errors.md_bbox_west, classes=['control-medium'],attrs=attrs_text) %}
+    <span class="info-block info-block-small">
+      <i class="icon-info-sign"></i>
+      {{ _('Geographic Lat/Lon Bounding Box') }}
+    </span>
+  {% endcall %}
+</div>
+
+<!-- Temporal extents section -->
+<div style="border:1px solid lightgray; border-radius:5px; background-color:rgb(14, 122, 129); color:white; text-align:left; padding:1px 1px 1px 10px;">
+  <span style="font-weight: bold">Temporal extents</span>
+</div>
+<div style="padding: 10px 0px 0px 10px">
+  <div class="control-group">
+      {{ form.input_datepicker('md_temporal_date', label=_('Individual date'), id='field-md_temporal_date', placeholder=_('YYYY-MM-DD'), value=data.md_temporal_date, error=errors.md_temporal_date, classes=['control-medium']) }}
+      <div style="padding: 0px 0px 15px 200px">or</div>
+      {{ form.input_datepicker('md_temporal_start_date', label=_('Start date'), id='field-md_temporal_start_date', placeholder=_('YYYY-MM-DD'), value=data.md_temporal_start_date, error=errors.md_temporal_start_date, classes=['control-medium']) }}
+      {{ form.input_datepicker('md_temporal_end_date', label=_('End date'), id='field-md_temporal_end_date', placeholder=_('YYYY-MM-DD'), value=data.md_temporal_end_date, error=errors.md_temporal_end_date, classes=['control-medium']) }}    
+  </div>
 </div>
 
 {#% block package_basic_fields_tags %}
