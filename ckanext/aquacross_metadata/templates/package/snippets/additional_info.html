@@ -114,34 +114,6 @@
     </tr>
   {% endif %}
 
-  {% if pkg_dict.md_bbox_north | length  > 0 %}
-    <tr>
-      <th scope="row" class="dataset-label">{{ _("Bounding Box - North") }}</th>
-      <td class="dataset-details">{{ pkg_dict.md_bbox_north }}</td>
-    </tr>
-  {% endif %}
-
-  {% if pkg_dict.md_bbox_south  | length  > 0 %}
-    <tr>
-      <th scope="row" class="dataset-label">{{ _("Bounding Box - South") }}</th>
-      <td class="dataset-details">{{ pkg_dict.md_bbox_south }}</td>
-    </tr>
-  {% endif %}
-  
-  {% if pkg_dict.md_bbox_east | length  > 0 %}
-    <tr>
-      <th scope="row" class="dataset-label">{{ _("Bounding Box - East") }}</th>
-      <td class="dataset-details">{{ pkg_dict.md_bbox_east }}</td>
-    </tr>
-  {% endif %}
-
-  {% if pkg_dict.md_bbox_west | length  > 0 %}
-    <tr>
-      <th scope="row" class="dataset-label">{{ _("Bounding Box - West") }}</th>
-      <td class="dataset-details">{{ pkg_dict.md_bbox_west }}</td>
-    </tr>
-  {% endif %}
-  
   {% if pkg_dict.md_temporal_date | length  > 0 %}
     <tr>
       <th scope="row" class="dataset-label">{{ _("Temporal date") }}</th>
@@ -205,13 +177,6 @@
     </tr>
   {% endif %}
 
-  {% if pkg_dict.md_aquacross_case_study | length  > 0   %}
-    <tr>
-      <th scope="row" class="dataset-label">{{ _("AQUACROSS Case Study") }}</th>
-      <td class="dataset-details">{{ pkg_dict.md_aquacross_case_study[0] }}</td>
-    </tr>
-  {% endif %}
-
   {% if pkg_dict.md_projections | length  > 0   %}
     <tr>
       <th scope="row" class="dataset-label">{{ _("Projections") }}</th>
@@ -219,13 +184,34 @@
     </tr>
   {% endif %}
 
-  {% if pkg_dict.spatial | length  > 0   %}
+  {% if pkg_dict.md_bbox_north | length  > 0 %}
     <tr>
-      <th scope="row" class="dataset-label">{{ _("spatial") }}</th>
-      <td class="dataset-details">{{ pkg_dict.spatial }}</td>
+      <th scope="row" class="dataset-label">{{ _("Spatial extent - North") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_bbox_north }}</td>
     </tr>
   {% endif %}
 
+  {% if pkg_dict.md_bbox_south  | length  > 0 %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Spatial extent - South") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_bbox_south }}</td>
+    </tr>
+  {% endif %}
+  
+  {% if pkg_dict.md_bbox_east | length  > 0 %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Spatial extent - East") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_bbox_east }}</td>
+    </tr>
+  {% endif %}
+
+  {% if pkg_dict.md_bbox_west | length  > 0 %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Spatial extent - West") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_bbox_west }}</td>
+    </tr>
+  {% endif %}
+  
   {% for extra in h.sorted_extras(pkg_dict.extras) %}
     {% set key, value = extra %}
     <tr>

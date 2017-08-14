@@ -2,6 +2,127 @@
 
 import ckan.plugins as p
 import ckan.plugins.toolkit as tk
+import ckan.lib.navl.dictization_functions as df
+
+def before_validator(key, flattened_data, errors, context):
+
+    # Metadata form workflow notes:
+    # Form variables:
+    #   md_bbox_north (north latitude, used to help build the geoJSON Polygon)
+    #   md_bbox_south (south latitude, used to help build the geoJSON Polygon)
+    #   md_bbox_east (east longitude, used to help build the geoJSON Polygon)
+    #   md_bbox_west (west longitude, used to help build the geoJSON Polygon)
+
+    # If the user did not select or enter a bounding box, then all variables are empty. 
+    # As bounding box is not mandatory in the form, no validation required
+
+    # Otherwise, we are checking if the 4 cordinates are valid (non-empty, valid number, in range) 
+    # if valid, we create a geoJSON polygon, and populate the 'spatial' field in the metadata schema.
+
+    # Note: We will have 2 duplicate bounding box information in the metadata schema.
+    # 1) the 4 individual coordinate fields
+    # 2) the spatial field in GeoJON format
+   
+    # get the spatial bounding box selected or input by the user via the HTML form
+    north = flattened_data[('md_bbox_north',)]
+    south = flattened_data[('md_bbox_south',)]
+    east = flattened_data[('md_bbox_east',)]
+    west = flattened_data[('md_bbox_west',)]
+
+    # check if no bounding box
+    if (not north or north is df.missing) and \
+       (not south or south is df.missing) and \
+       (not east or east is df.missing) and \
+       (not west or west is df.missing):
+
+        # all from input fields are empty, no bounding box, no validation required, return
+        return
+
+    # we have a bounding box (or attempted bounding box at least)... validate...
+    no_errors = True
+
+    # validate north
+    north_valid = False
+    if (not north or north is df.missing):
+        errors[('md_bbox_north',)].append('Missing latitude value. Values must be between -90 and 90')
+    else:
+        north_float = 0.0
+        try:
+            north_float = float(north)
+            if north_float < -90.0 or north_float > 90.0:
+                errors[('md_bbox_north',)].append('Invalid latitude value. Values must be between -90 and 90')
+            else:
+                north_valid = True
+        except (AttributeError, ValueError), e:
+            errors[('md_bbox_north',)].append('Invalid latitude value. Values must be between -90 and 90')
+    no_errors = north_valid
+
+    # validate south
+    south_valid = False
+    if (not south or south is df.missing):
+        errors[('md_bbox_south',)].append('Missing latitude value. Values must be between -90 and 90')
+    else:
+        south_float = 0.0
+        try:
+            south_float = float(south)
+            if south_float < -90.0 or south_float > 90.0:
+                errors[('md_bbox_south',)].append('Invalid latitude value. Values must be between -90 and 90')
+            else:
+                south_valid = True
+        except (AttributeError, ValueError), e:
+            errors[('md_bbox_south',)].append('Invalid latitude value. Values must be between -90 and 90')
+    no_errors = no_errors and south_valid
+
+    # validate north with south
+    if north_valid and south_valid and south_float > north_float:
+        errors[('md_bbox_north',)].append('Invalid latitude value. North must be greater or equal to South')
+        errors[('md_bbox_south',)].append('Invalid latitude value. North must be greater or equal to South')
+        no_errors = False
+
+    # validate east
+    east_valid = False
+    if (not east or east is df.missing):
+        errors[('md_bbox_east',)].append('Missing longitude value. Values must be between -180 and 180')
+    else:
+        east_float = 0.0
+        try:
+            east_float = float(east)
+            if east_float < -180.0 or east_float > 180.0:
+                errors[('md_bbox_east',)].append('Invalid longitude value. Values must be between -180 and 180')
+            else:
+                east_valid = True
+        except (AttributeError, ValueError), e:
+            errors[('md_bbox_east',)].append('Invalid longitude value. Values must be between -180 and 180')
+    no_errors = no_errors and east_valid
+
+    # validate west
+    west_valid = False
+    if (not west or west is df.missing):
+        errors[('md_bbox_west',)].append('Missing longitude value. Values must be between -180 and 180')
+    else:
+        west_float = 0.0
+        try:
+            west_float = float(west)
+            if west_float < -180.0 or west_float > 180.0:
+                errors[('md_bbox_west',)].append('Invalid longitude value. Values must be between -180 and 180')
+            else:
+                west_valid = True
+        except (AttributeError, ValueError), e:
+            errors[('md_bbox_west',)].append('Invalid longitude value. Values must be between -180 and 180')
+    no_errors = no_errors and west_valid
+
+    # validate east with west
+    if east_valid and west_valid and west_float > east_float:
+        errors[('md_bbox_east',)].append('Invalid longitude value. East must be greater or equal to West')
+        errors[('md_bbox_west',)].append('Invalid longitude value. East must be greater or equal to West')
+        no_errors = False
+
+    # create a geoJSON polygon, and populate the 'spatial' field in the metadatad schema 
+    if no_errors:
+        spatial_field = '{ "type": "Polygon", "coordinates": [[[' + east + "," + south + "], [" + east + "," + north + "], [" + west + ", " + north + "], [" + west + "," + south + "],[" + east + "," + south + "]]]}"
+        flattened_data[('spatial',)] = spatial_field
+    return
+
 
 # Classification codes
 def create_md_classification_codes():
@@ -155,42 +276,6 @@ def md_responsible_party_roles():
     except tk.ObjectNotFound:
         return None
 
-
-# AQUACROSS Case Study
-def create_md_aquacross_case_studies():
-    user = tk.get_action('get_site_user')({'ignore_auth': True}, {})
-    context = {'user': user['name']}
-    print("create_md_aquacross_case_studies")
-    try:
-        data = {'id': 'md_aquacross_case_studies'}
-        #tk.get_action('vocabulary_delete')(context, data)
-        tk.get_action('vocabulary_show')(context, data)
-    except tk.ObjectNotFound:
-        data = {'name': 'md_aquacross_case_studies'}
-        vocab = tk.get_action('vocabulary_create')(context, data)
-        for tag in ('   ',
-                    'Case Study 1 - North Sea',
-                    'Case Study 2 - Mediterranean - Andalusia Spain and Morocco',
-                    'Case Study 3 - Danube River Basin',
-                    'Case Study 4 - Lough Erne - Ireland',
-                    'Case Study 5 - Vouga River - Portugal',
-                    'Case Study 6 - Ronne a - Sweden',
-                    'Case Study 7 - Swiss Plateau',
-                    'Case Study 8 - The Azores'):
-            data = {'name': tag, 'vocabulary_id': vocab['id']}
-            tk.get_action('tag_create')(context, data)
-
-def md_aquacross_case_studies():
-
-    create_md_aquacross_case_studies()
-    try:
-        tag_list = tk.get_action('tag_list')
-        md_aquacross_case_studies = tag_list(data_dict={'vocabulary_id': 'md_aquacross_case_studies'})
-        return md_aquacross_case_studies
-        #return 'foo'
-    except tk.ObjectNotFound:
-        return None
-
 def create_md_projections():
     user = tk.get_action('get_site_user')({'ignore_auth': True}, {})
     context = {'user': user['name']}
@@ -321,7 +406,6 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
                 'md_classification_codes': md_classification_codes,
                 'md_spatial_representation_types': md_spatial_representation_types,
                 'md_responsible_party_roles': md_responsible_party_roles,
-                'md_aquacross_case_studies': md_aquacross_case_studies,
                 'md_projections': md_projections,
                 'md_resource_types': md_resource_types,
                 'md_keywords_vocab_date_types': md_keywords_vocab_date_types}
@@ -338,6 +422,9 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
         tk.add_resource('fanstatic', 'aquacross-metadata')
 
     def _modify_package_schema(self, schema):
+        schema.update({
+            '__before': [before_validator, tk.get_validator('ignore_missing')]
+        })
         schema.update({
             'md_email_address': [tk.get_validator('ignore_missing'),
                             tk.get_converter('convert_to_extras')]
@@ -463,11 +550,6 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
         schema.update({
             'md_limitations_on_puclic_use': [tk.get_validator('ignore_missing'),
                                              tk.get_converter('convert_to_extras')]
-        })
-        schema.update({
-            'md_aquacross_case_study': [tk.get_validator('ignore_missing'),
-                                        tk.get_converter('convert_to_tags')('md_aquacross_case_studies')
-            ]
         })
 
         schema.update({
@@ -622,11 +704,6 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
             'md_limitations_on_puclic_use': [tk.get_converter('convert_from_extras'),
                                              tk.get_validator('ignore_missing')]
         })
-        schema.update({
-            'md_aquacross_case_study': [
-                tk.get_converter('convert_from_tags')('md_aquacross_case_studies'),
-                tk.get_validator('ignore_missing')]
-            })
         schema.update({
             'md_projections': [
                 tk.get_converter('convert_from_tags')('md_projections'),
