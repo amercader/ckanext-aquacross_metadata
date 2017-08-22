@@ -13,7 +13,7 @@ ckan.module('aquacross_metadata_datepicker', function ($, _) {
       $(data_field_id_selector).datepicker( "option", "dateFormat", "yy-mm-dd" );
       $(data_field_id_selector).datepicker( "option", "changeMonth", true );
       $(data_field_id_selector).datepicker( "option", "changeYear", true );
-      $(data_field_id_selector).datepicker( "option", "yearRange", "1900:c");
+      $(data_field_id_selector).datepicker( "option", "yearRange", "1900:2050");
       $(data_field_id_selector).datepicker( "setDate" , current_date );
     },
   };
