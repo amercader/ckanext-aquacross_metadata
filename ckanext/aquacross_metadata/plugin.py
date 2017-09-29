@@ -3,6 +3,7 @@
 import ckan.plugins as p
 import ckan.plugins.toolkit as tk
 import ckan.lib.navl.dictization_functions as df
+import pylons.config as config
 
 def before_validator(key, flattened_data, errors, context):
 
@@ -276,17 +277,44 @@ def md_responsible_party_roles():
     except tk.ObjectNotFound:
         return None
 
+# build spatial projections tag list
 def create_md_projections():
+
+    # get context object
     user = tk.get_action('get_site_user')({'ignore_auth': True}, {})
     context = {'user': user['name']}
-    print("create_md_projections")
+
+    # Get the value of the ckan.ckanext.aquacross_metadata.rebuild_tag_vocabs
+    # setting from the CKAN config file as a string, or False if the setting
+    # isn't in the config file.
+    rebuild_tag_vocabs = config.get('ckanext.aquacross_metadata.rebuild_tag_vocabs', False)
+
+    # Convert the value from a string to a boolean.
+    rebuild_tag_vocabs = tk.asbool(rebuild_tag_vocabs)
+
+    # variable to flag whether to rebuild the tag vocabularies
+    rebuild = False
+    if rebuild_tag_vocabs is True:
+        rebuild = True
+
+    vocab = None
     try:
+        # get 'md_projections' tag vocabulary (if exists)
         data = {'id': 'md_projections'}
-        #tk.get_action('vocabulary_delete')(context, data)
-        tk.get_action('vocabulary_show')(context, data)
+        vocab = tk.get_action('vocabulary_show')(context, data)
     except tk.ObjectNotFound:
+        # 'md_projections' tag vocabulary does not exist.
+        # create a new projection tag vocabulary (empty)
         data = {'name': 'md_projections'}
         vocab = tk.get_action('vocabulary_create')(context, data)
+        rebuild = True
+
+    if rebuild is True and vocab is not None:
+        # get tags that belong to 'md_projections' vocabulary (if any)
+        tag_list = tk.get_action('tag_list')
+        md_projections_tags = tag_list(data_dict={'vocabulary_id': 'md_projections'})
+
+        # iterate through tag strings, if tag does not exist, then add to the vocabulary
         for tag in ('   ',
                     'ETRS89 - ETRS-LAEA -- EPSG-3035',
                     'ETRS89 - ETRS-LCC  -- EPSG-3034',
@@ -306,33 +334,21 @@ def create_md_projections():
                     'ETRS89 - ETRS-TM39 -- EPSG-3051',
                     'EPSG 2190 - Azores Oriental 1940 - UTM zone 26N',
                     'EPSG 2188 - Azores Occidental 1939 - UTM zone 25N',
+                    'EPSG 3335 - Pulkovo 1942-58 Gauss-Kruger zone 5',
+                    'EPSG 31700 - Dealul Piscului 1970 Stereo 70',
                     'WGS 84 -- EPSG-4326'
                    ):
             data = {'name': tag, 'vocabulary_id': vocab['id']}
-            tk.get_action('tag_create')(context, data)
-    else:
-
-        data = {'id': 'md_projections'}
-        vocab = tk.get_action('vocabulary_update')(context, data)
-
-        tag_list = tk.get_action('tag_list')
-        md_projections = tag_list(data_dict={'vocabulary_id': 'md_projections'})
-
-        for tag in ('EPSG 2190 - Azores Oriental 1940 - UTM zone 26N',
-                    'EPSG 2188 - Azores Occidental 1939 - UTM zone 25N'):
-            data = {'name': tag, 'vocabulary_id': vocab['id']}
-            if (tag not in md_projections):
+            if (tag not in md_projections_tags):
+                # tag does not exist, add to the vocabulary
                 tk.get_action('tag_create')(context, data)
 
 def md_projections():
-
     create_md_projections()
-
     try:
         tag_list = tk.get_action('tag_list')
         md_projections = tag_list(data_dict={'vocabulary_id': 'md_projections'})
         return md_projections
-        #return 'foo'
     except tk.ObjectNotFound:
         return None
 
@@ -552,11 +568,11 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
                                              tk.get_converter('convert_to_extras')]
         })
 
-        schema.update({
-            'md_projections': [tk.get_validator('ignore_missing'),
-                                        tk.get_converter('convert_to_tags')('md_projections')
-                                        ]
-        })
+        schema.update({'md_projections': [
+                          tk.get_converter('convert_to_tags')('md_projections'),
+                          tk.get_validator('ignore_missing') ]
+                      })
+
         return schema
 
     def create_package_schema(self):
@@ -704,11 +720,10 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
             'md_limitations_on_puclic_use': [tk.get_converter('convert_from_extras'),
                                              tk.get_validator('ignore_missing')]
         })
-        schema.update({
-            'md_projections': [
-                tk.get_converter('convert_from_tags')('md_projections'),
-                tk.get_validator('ignore_missing')]
-        })
+        schema.update({'md_projections': [  
+                          tk.get_converter('convert_from_tags')('md_projections'),
+                          tk.get_validator('ignore_missing') ]
+                      })
         return schema
 
     def is_fallback(self):
