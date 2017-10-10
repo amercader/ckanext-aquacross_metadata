@@ -569,8 +569,8 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
         })
 
         schema.update({'md_projections': [
-                          tk.get_converter('convert_to_tags')('md_projections'),
-                          tk.get_validator('ignore_missing') ]
+                          tk.get_validator('ignore_missing'),
+                          tk.get_converter('convert_to_tags')('md_projections') ]
                       })
 
         return schema
