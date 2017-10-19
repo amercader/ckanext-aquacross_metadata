@@ -23,6 +23,20 @@
     </tr>
   {% endif %}
 
+  {% if pkg_dict.md_title_original|length > 0 %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Title in original language") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_title_original }}</td>
+    </tr>
+  {% endif %}
+
+  {% if pkg_dict.md_locale_language|trim|length > 0 %}
+    <tr>
+      <th scope="row" class="dataset-label">{{ _("Original language") }}</th>
+      <td class="dataset-details">{{ pkg_dict.md_locale_language }}</td>
+    </tr>
+  {% endif %}
+
   {% if pkg_dict.md_abstract | length  > 0 %}
     <tr>
       <th scope="row" class="dataset-label">{{ _("Abstract") }}</th>

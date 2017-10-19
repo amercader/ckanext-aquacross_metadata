@@ -352,6 +352,84 @@ def md_projections():
     except tk.ObjectNotFound:
         return None
 
+# build locale languages tag list
+def create_md_locale_languages():
+
+    # get context object
+    user = tk.get_action('get_site_user')({'ignore_auth': True}, {})
+    context = {'user': user['name']}
+
+    # Get the value of the ckan.ckanext.aquacross_metadata.rebuild_tag_vocabs
+    # setting from the CKAN config file as a string, or False if the setting
+    # isn't in the config file.
+    rebuild_tag_vocabs = config.get('ckanext.aquacross_metadata.rebuild_tag_vocabs', False)
+
+    # Convert the value from a string to a boolean.
+    rebuild_tag_vocabs = tk.asbool(rebuild_tag_vocabs)
+
+    # variable to flag whether to rebuild the tag vocabularies
+    rebuild = False
+    if rebuild_tag_vocabs is True:
+        rebuild = True
+
+    vocab = None
+    try:
+        # get 'md_locale_languages' tag vocabulary (if exists)
+        data = {'id': 'md_locale_languages'}
+        vocab = tk.get_action('vocabulary_show')(context, data)
+    except tk.ObjectNotFound:
+        # 'md_locale_languages' tag vocabulary does not exist.
+        # create a new original languages tag vocabulary (empty)
+        data = {'name': 'md_locale_languages'}
+        vocab = tk.get_action('vocabulary_create')(context, data)
+        rebuild = True
+
+    if rebuild is True and vocab is not None:
+        # get tags that belong to 'md_locale_languages' vocabulary (if any)
+        tag_list = tk.get_action('tag_list')
+        md_locale_languages_tags = tag_list(data_dict={'vocabulary_id': 'md_locale_languages'})
+
+        # iterate through tag strings, if tag does not exist, then add to the vocabulary
+        for tag in ('   ',
+                    'Bulgarian',
+                    'Croatian',
+                    'Czech',
+                    'Danish',
+                    'Dutch',
+                    'English',
+                    'Estonian',
+                    'Finnish',
+                    'French',
+                    'German',
+                    'Greek',
+                    'Hungarian',
+                    'Irish',
+                    'Italian',
+                    'Latvian',
+                    'Lithuanian',
+                    'Maltese',
+                    'Polish',
+                    'Portuguese',
+                    'Romanian',
+                    'Slovak',
+                    'Slovenian',
+                    'Spanish',
+                    'Swedish'
+                   ):
+            data = {'name': tag, 'vocabulary_id': vocab['id']}
+            if (tag not in md_locale_languages_tags):
+                # tag does not exist, add to the vocabulary
+                tk.get_action('tag_create')(context, data)
+
+def get_md_locale_languages():
+    create_md_locale_languages()
+    try:
+        tag_list = tk.get_action('tag_list')
+        md_locale_languages = tag_list(data_dict={'vocabulary_id': 'md_locale_languages'})
+        return md_locale_languages
+    except tk.ObjectNotFound:
+        return None
+
 # Resource type
 def create_md_resource_types():
     user = tk.get_action('get_site_user')({'ignore_auth': True}, {})
@@ -424,7 +502,8 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
                 'md_responsible_party_roles': md_responsible_party_roles,
                 'md_projections': md_projections,
                 'md_resource_types': md_resource_types,
-                'md_keywords_vocab_date_types': md_keywords_vocab_date_types}
+                'md_keywords_vocab_date_types': md_keywords_vocab_date_types,
+                'get_md_locale_languages': get_md_locale_languages}
 
     def update_config(self, config):
         # Add this plugin's templates dir to CKAN's extra_template_paths, so
@@ -458,6 +537,14 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
                                  tk.get_converter('convert_to_tags')('md_resource_types')
             ]
         })
+        schema.update({'md_title_original': [
+                          tk.get_validator('ignore_missing'),
+                          tk.get_converter('convert_to_extras') ]
+                      })
+        schema.update({'md_locale_language': [
+                          tk.get_validator('ignore_missing'),
+                          tk.get_converter('convert_to_extras') ]
+                      })
         schema.update({
             'md_abstract': [tk.get_validator('ignore_missing'),
                             tk.get_converter('convert_to_extras')]
@@ -604,6 +691,14 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
                 tk.get_converter('convert_from_tags')('md_resource_types'),
                 tk.get_validator('ignore_missing')]
             })
+        schema.update({'md_title_original': [
+                          tk.get_validator('convert_from_extras'),
+                          tk.get_converter('ignore_missing') ]
+                      })
+        schema.update({'md_locale_language': [
+                          tk.get_validator('convert_from_extras'),
+                          tk.get_converter('ignore_missing') ]
+                      })
         schema.update({
             'md_abstract': [tk.get_converter('convert_from_extras'),
                             tk.get_validator('ignore_missing')]

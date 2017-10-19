@@ -121,12 +121,17 @@
   </div>
 </div>
 
-<!-- Identification -->
+<!-- Title -->
 <div style="border:1px solid lightgray; border-radius:5px; background-color:rgb(14, 122, 129); color:white; text-align:left; padding:1px 1px 1px 10px;">
-  <span style="font-weight: bold">Identification</span>
+  <span style="font-weight: bold">Title</span>
 </div>
 <div style="padding: 10px 0px 0px 10px">
-  {{ form.input('title', id='field-title', label=_('Title'), placeholder=_('eg. A descriptive title'), value=data.title, error=errors.title, classes=['control-full', 'control-medium'], attrs={'data-module': 'slug-preview-target'}) }}
+  {% call form.input('title', id='field-title', label=_('Title'), placeholder=_('A descriptive title in English'), value=data.title, error=errors.title, classes=['control-full', 'control-medium'], attrs={'data-module': 'slug-preview-target'}, is_required=true) %}
+  {% endcall %}
+    <span class="info-block info-block-small">
+      <i class="icon-info-sign"></i>
+        {{ _('Enter the title in English above. The URL field is automatically generated from this title.') }}
+    </span>
   {% block package_basic_fields_url %}
     {% set prefix = h.url_for(controller='package', action='read', id='') %}
     {% set domain = h.url_for(controller='package', action='read', id='', qualified=true) %}
@@ -135,6 +140,30 @@
     {{ form.prepend('name', id='field-name', label=_('URL'), prepend=prefix, placeholder=_('eg. my-dataset'), value=data.name, error=errors.name, attrs=attrs, is_required=true) }}
   {% endblock %}
 
+  <hr style="text-align:center; width:80%; margin-left: auto; margin-right:auto">
+
+  {{ form.input('md_title_original', id='field-md_title_original', label=_('Original Title'), placeholder=_('A descriptive title in the original language if exists'), value=data.md_title_original, error=errors.md_title_original, classes=['control-full', 'control-medium']) }}
+  <div class="control-group">
+    <label class="control-label" for="field-md_locale_language">{{ _("Language") }}</label>
+    <div class="controls">
+      <select id="field-md_locale_language" name="md_locale_language" data-module="autocomplete">
+        {% for i in h.get_md_locale_languages()  %}
+          <option value="{{ i }}" {% if i in data.get('md_locale_language', []) %}selected="selected"{% endif %}>{{ i }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <span class="info-block info-block-small">
+      <i class="icon-info-sign"></i>
+        {{ _('If exists, enter the original non-English title and select its language.') }}
+    </span>
+  </div>
+</div>
+
+<!-- Identification -->
+<div style="border:1px solid lightgray; border-radius:5px; background-color:rgb(14, 122, 129); color:white; text-align:left; padding:1px 1px 1px 10px;">
+  <span style="font-weight: bold">Identification</span>
+</div>
+<div style="padding: 10px 0px 0px 10px">
   {{ form.textarea('md_abstract', id='field-md_abstract', label=_('Abstract'), placeholder=_('Add a brief narrative summary of the content of the data'), value=data.md_abstract, error=errors.md_abstract) }}
 
   {{ form.input_datepicker('md_dataset_creation_date', label=_('Creation date'), id='field-md_dataset_creation_date', placeholder=_('YYYY-MM-DD'), value=data.md_dataset_creation_date, error=errors.md_dataset_creation_date, classes=['control-medium']) }}
