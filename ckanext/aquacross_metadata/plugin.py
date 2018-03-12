@@ -493,6 +493,26 @@ def md_keywords_vocab_date_types():
 def get_dict_from_json(json_data):
    return json.loads(json_data)
 
+def get_selected_organisation(data, organizations_available):
+    if( 'owner_org' in data ):
+        # existing dataset, with an organisation
+        # return existing org owner id
+        return data['owner_org']
+    if( 'group_id' in data ):
+        if( data['group_id'] == None):
+            # new dataset, unknown organisation originator
+            return(get_default_organisation(organizations_available, None))
+        else:
+            # new dataset, known organisation originator
+            return(get_default_organisation(organizations_available, data['group_id']))
+
+def get_default_organisation(organizations_available, fallback_org):
+    # find if 'qc' organisation is registered, if so use as default for new a new dataset 
+    for organisation in organizations_available:
+        if( organisation['name'] == "qc" ):
+            return organisation['id']
+    return fallback_org
+
 # Metadata Plugin Class
 class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
     p.implements(p.IDatasetForm)
@@ -508,7 +528,8 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
                 'md_resource_types': md_resource_types,
                 'md_keywords_vocab_date_types': md_keywords_vocab_date_types,
                 'get_md_locale_languages': get_md_locale_languages,
-                'get_dict_from_json': get_dict_from_json}
+                'get_dict_from_json': get_dict_from_json,
+                'get_selected_organisation': get_selected_organisation}
 
     def update_config(self, config):
         # Add this plugin's templates dir to CKAN's extra_template_paths, so
