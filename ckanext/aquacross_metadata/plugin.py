@@ -4,6 +4,7 @@ import ckan.plugins as p
 import ckan.plugins.toolkit as tk
 import ckan.lib.navl.dictization_functions as df
 import pylons.config as config
+import json
 
 def before_validator(key, flattened_data, errors, context):
 
@@ -489,6 +490,9 @@ def md_keywords_vocab_date_types():
     except tk.ObjectNotFound:
         return None
 
+def get_dict_from_json(json_data):
+   return json.loads(json_data)
+
 # Metadata Plugin Class
 class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
     p.implements(p.IDatasetForm)
@@ -503,7 +507,8 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
                 'md_projections': md_projections,
                 'md_resource_types': md_resource_types,
                 'md_keywords_vocab_date_types': md_keywords_vocab_date_types,
-                'get_md_locale_languages': get_md_locale_languages}
+                'get_md_locale_languages': get_md_locale_languages,
+                'get_dict_from_json': get_dict_from_json}
 
     def update_config(self, config):
         # Add this plugin's templates dir to CKAN's extra_template_paths, so
@@ -628,6 +633,10 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
                            tk.get_converter('convert_to_extras')]
         })
 
+        schema.update({'md_responsible_organisations': [
+                          tk.get_validator('ignore_missing'),
+                          tk.get_converter('convert_to_extras') ]
+                      })
         schema.update({
             'md_responsible_party_name': [tk.get_validator('ignore_missing'),
                                           tk.get_converter('convert_to_extras')]
@@ -788,6 +797,10 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
                            tk.get_validator('ignore_missing')]
         })
 
+        schema.update({'md_responsible_organisations': [  
+                          tk.get_converter('convert_from_extras'),
+                          tk.get_validator('ignore_missing') ]
+                      })
         schema.update({
             'md_responsible_party_name': [tk.get_converter('convert_from_extras'),
                                           tk.get_validator('ignore_missing')]

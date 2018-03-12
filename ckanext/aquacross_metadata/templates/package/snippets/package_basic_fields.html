@@ -4,6 +4,9 @@
 {% resource 'aquacross-metadata/jquery.ui.datepicker.js' %}
 {% resource 'aquacross-metadata/aquacross_metadata_datepicker.js' %}
 {% resource 'aquacross-metadata/jquery-ui.css' %}
+{#% resource 'aquacross-metadata/jquery.ui.button.js' %#}
+{#% resource 'aquacross-metadata/jquery.ui.widget.js' %#}
+{#% resource 'aquacross-metadata/jquery.ui.core.css' %#}
 
 {#% block package_basic_fields_title %}
   {{ form.input('title', id='field-title', label=_('Title'), placeholder=_('eg. A descriptive title'), value=data.title, error=errors.title, classes=['control-full', 'control-large'], attrs={'data-module': 'slug-preview-target'}) }}
@@ -98,28 +101,69 @@
 {{ form.hidden(name='md_language', value='Eng') }}
 </div>
 
-<!-- Responsible party -->
+
+<!-- Responsible organisation(s) -->
+{% resource 'aquacross-metadata/responsible_organisations.js' %}
 <div style="border:1px solid lightgray; border-radius:5px; background-color:rgb(14, 122, 129); color:white; text-align:left; padding:1px 1px 1px 10px;">
-  <span style="font-weight: bold">Responsible party for this dataset</span>
+  <span style="font-weight: bold">Responsible organisations for this dataset</span>
 </div>
-<div style="padding: 10px 0px 0px 10px">
-  {{ form.input('md_responsible_party_name', label=_('Organisation'), id='field-md_responsible_party_name', placeholder=_(''), value=data.md_responsible_party_name, error=errors.md_responsible_party_name, classes=['control-medium']) }}
-  {{ form.input('md_responsible_party_email', label=_('E-mail'), id='field-md_responsible_party_email', placeholder=_(''), value=data.md_responsible_party_email, error=errors.md_responsible_party_email, classes=['control-medium']) }}
-  <div class="control-group">
-    <label class="control-label" for="field-md_responsible_party_role">{{ _("Role") }}</label>
-    <div class="controls">
-      <select id="field-md_responsible_party_role" name="md_responsible_party_role" data-module="autocomplete">
-        {% for md_responsible_party_role in h.md_responsible_party_roles()  %}
-          <option value="{{ md_responsible_party_role }}" {% if md_responsible_party_role in data.get('md_responsible_party_role', []) %}selected="selected"{% endif %}>{{ md_responsible_party_role }}</option>
-        {% endfor %}
-      </select>
+<input type='hidden' name='md_responsible_organisations' id='field-md_responsible_organisations' value="{{data.md_responsible_organisations}}" 
+       data-module="responsible_organisations" />
+{% for n in range(1,6) %}
+  {% if n == 1 %}
+    <div id="responsible_organisation{{n}}" style="padding: 10px 0px 0px 10px; display: block">
+  {% else %}
+    <div id="responsible_organisation{{n}}" style="padding: 10px 0px 0px 10px; display: none">
+  {% endif %}
+
+      <div>
+        <div style="float: left">
+          {{ form.input('md_responsible_party_name[]', label=_('Organisation'), placeholder=_(''), 
+             value=data.md_responsible_party_name, error=errors.md_responsible_party_name, classes=['control-medium'],
+             attrs={'data-module':'responsible_organisations_change'}) }}
+        </div>
+        <div style="float: right">
+          {% if n == 1 %}
+            <button id="responsible_organisation1_add" class="btn btn-primary" type="button" style="display: block"
+                    onClick="addOrganisation()")><i class="fa icon-plus"></i></button>
+          {% else %}
+            <button id="responsible_organisation{{n}}_remove" class="btn btn-danger" type="button" style="display: block"
+                    onClick="removeOrganisation({{n}});")><i class="fa icon-minus"></i></button>
+          {% endif %}
+        </div>
+      </div>
+
+      <div>
+        <div style="float: left">
+          {{ form.input('md_responsible_party_email[]', label=_('E-mail'), placeholder=_(''),
+             value=data.md_responsible_party_email, error=errors.md_responsible_party_email, classes=['control-medium'],
+             attrs={'data-module':'responsible_organisations_change'}) }}
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div style="float: left">
+          <label class="control-label" for="field-md_responsible_party_role">{{ _("Role") }}</label>
+          <div class="controls" data-module="responsible_organisations_change">
+            <select name="md_responsible_party_role[]" data-module="autocomplete">
+              {% for md_responsible_party_role in h.md_responsible_party_roles()  %}
+                <option value="{{ md_responsible_party_role }}"
+                  {% if md_responsible_party_role in data.get('md_responsible_party_role', []) %}selected="selected"{% endif %}>
+                  {{ md_responsible_party_role }}
+                </option>
+              {% endfor %}
+            </select>
+          </div>
+          <span class="info-block info-block-small">
+            <i class="icon-info-sign"></i>
+            {{ _('Who owns, distibutes, is a custodian, etc. of this dataset') }}
+          </span>
+        </div>
+      </div>
+
     </div>
-    <span class="info-block info-block-small">
-      <i class="icon-info-sign"></i>
-      {{ _('Who owns, distibutes, is a custodian, etc. of this dataset') }}
-    </span>
-  </div>
-</div>
+{% endfor %}
+
 
 <!-- Title -->
 <div style="border:1px solid lightgray; border-radius:5px; background-color:rgb(14, 122, 129); color:white; text-align:left; padding:1px 1px 1px 10px;">

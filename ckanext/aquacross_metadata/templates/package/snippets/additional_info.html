@@ -156,6 +156,27 @@
     </tr>
   {% endif %}
 
+  {% if pkg_dict.md_responsible_organisations | length  > 0 %}
+    {% for responsible_organisation in h.get_dict_from_json(pkg_dict.md_responsible_organisations) %}
+      <tr>
+        <th scope="row" class="dataset-label">{{ _("Responsible party") }}</th>
+        <td class="dataset-details">
+        {% if responsible_organisation["organisation"] | length > 0 %}
+            <b>Organisation</b>: {{ responsible_organisation["organisation"] }}
+        {% endif %}
+
+        {% if responsible_organisation["email"] | length > 0 %}
+            <br><b>Email</b>: {{ responsible_organisation["email"] }}
+        {% endif %}
+
+        {% if responsible_organisation["role"] | trim | length > 0 %}
+            <br><b>Role</b>: {{ responsible_organisation["role"] }}
+        {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+  {% endif %}
+
   {% if pkg_dict.md_responsible_party_name | length  > 0 %}
     <tr>
       <th scope="row" class="dataset-label">{{ _("Responsible party") }}</th>
@@ -170,7 +191,7 @@
     </tr>
   {% endif %}
 
-  {% if pkg_dict.md_responsible_party_role | length  > 0   %}
+  {% if pkg_dict.md_responsible_party_role[0] | trim | length > 0 %}
     <tr>
       <th scope="row" class="dataset-label">{{ _("Responsible party role") }}</th>
       <td class="dataset-details">{{ pkg_dict.md_responsible_party_role[0] }}</td>
