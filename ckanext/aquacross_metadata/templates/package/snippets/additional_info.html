@@ -58,10 +58,10 @@
     </tr>
   {% endif %}
 
-  {% if pkg_dict.license_id   %}
+  {% if pkg_dict.license_title | length > 0 %}
     <tr>
       <th scope="row" class="dataset-label">{{ _("License") }}</th>
-      <td class="dataset-details">{{ pkg_dict.license_id }}</td>
+      <td class="dataset-details">{{ pkg_dict.license_title }}</td>
     </tr>
   {% endif %}
 
