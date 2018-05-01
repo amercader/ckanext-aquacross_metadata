@@ -156,8 +156,11 @@
     </tr>
   {% endif %}
 
-  {% if pkg_dict.md_responsible_organisations | length  > 0 %}
+  {% if pkg_dict.md_responsible_organisations | length > 0 %}
     {% for responsible_organisation in h.get_dict_from_json(pkg_dict.md_responsible_organisations) %}
+      {% if responsible_organisation["organisation"] | length > 0 or
+            responsible_organisation["email"] | length > 0 or
+            responsible_organisation["role"] | trim | length > 0 %}
       <tr>
         <th scope="row" class="dataset-label">{{ _("Responsible party") }}</th>
         <td class="dataset-details">
@@ -174,6 +177,7 @@
         {% endif %}
         </td>
       </tr>
+      {% endif %}
     {% endfor %}
   {% endif %}
 
