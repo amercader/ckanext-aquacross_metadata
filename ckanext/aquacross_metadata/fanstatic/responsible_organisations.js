@@ -55,15 +55,24 @@ function removeOrganisation(id) {
 function make_responsible_organisation_json() {
     var org_dict = new Array();
     var json = "";
+    var count = 0;
     for (var i=0; i < MAX_ORG; i++) {
         // if this div id is visible, process
         var div_id = "responsible_organisation" + (i+1);
         if( $('#' + div_id).is(':visible') ) {
+            var organisation = $('input[name="md_responsible_party_name[]"]')[i].value;
+            var email = $('input[name="md_responsible_party_email[]"]')[i].value;
+            if( organisation === "" && email === "" ) {
+                // no form values for this organisation, continue to next
+                continue;
+            }
+
             // process form values into JSON
-            org_dict[i] = {};
-            org_dict[i]["organisation"] = $('input[name="md_responsible_party_name[]"]')[i].value;
-            org_dict[i]["email"] = $('input[name="md_responsible_party_email[]"]')[i].value;;
-            org_dict[i]["role"] = $('select[name="md_responsible_party_role[]"]')[i].value;
+            org_dict[count] = {};
+            org_dict[count]["organisation"] = organisation;
+            org_dict[count]["email"] = email;
+            org_dict[count]["role"] = $('select[name="md_responsible_party_role[]"]')[i].value;
+            count++;
         }
     }
     // set hidden form input with responsible organisations in a json encoding
@@ -84,7 +93,7 @@ ckan.module('responsible_organisations', function ($, _) {
             for (var i=0; i < MAX_ORG; i++) {
                 $('input[name="md_responsible_party_name[]"]')[i].value = "";
                 $('input[name="md_responsible_party_email[]"]')[i].value = "";
-                $('select[name="md_responsible_party_role[]"]')[i].value = "   ";
+                $('select[name="md_responsible_party_role[]"]')[i].value = "Point of Contact";
             }
             if( legacy_organisation )
                 $('input[name="md_responsible_party_name[]"]')[0].value = legacy_organisation;
@@ -109,9 +118,13 @@ ckan.module('responsible_organisations', function ($, _) {
                     var organisation = responsible_organisations_dict[i].organisation;
                     var email = responsible_organisations_dict[i].email;
                     var role = responsible_organisations_dict[i].role;
+
                     $('input[name="md_responsible_party_name[]"]')[i].value = organisation;
                     $('input[name="md_responsible_party_email[]"]')[i].value = email;
-                    $('select[name="md_responsible_party_role[]"]')[i].value = role;
+                    if( organisation === "" && email === "" )
+                        $('select[name="md_responsible_party_role[]"]')[i].value = "Point of Contact"
+                    else
+                        $('select[name="md_responsible_party_role[]"]')[i].value = role;
                     if( i > 0 )
                         addOrganisation();
                 }

@@ -156,7 +156,7 @@
           </div>
           <span class="info-block info-block-small">
             <i class="icon-info-sign"></i>
-            {{ _('Who owns, distibutes, is a custodian, etc. of this dataset') }}
+            {{ _('Who owns, distibutes, is a custodian, etc. of this dataset. If unsure of the role, use \'Point of Contact\'') }}
           </span>
         </div>
       </div>
@@ -224,7 +224,7 @@
     </span>
   {% endcall %}
 
-  {{ form.input('md_limitations_on_puclic_use', label=_('Limitations on public use'), id='field-md_limitations_on_puclic_use', placeholder=_(''), value=data.md_limitations_on_puclic_use, error=errors.md_limitations_on_puclic_use, classes=['control-medium']) }}
+  {{ form.textarea('md_limitations_on_puclic_use', label=_('Limitations on public use'), id='field-md_limitations_on_puclic_use', placeholder=_(''), value=data.md_limitations_on_puclic_use, error=errors.md_limitations_on_puclic_use) }}
 
   {% block package_basic_fields_license %}
     <div class="control-group">
