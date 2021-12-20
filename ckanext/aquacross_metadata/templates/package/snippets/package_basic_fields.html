@@ -60,7 +60,7 @@
 
 <!-- Metadata - Contact point -->
 <div style="border:1px solid lightgray; border-radius:5px; background-color:rgb(14, 122, 129); color:white; text-align:left; padding:1px 1px 1px 10px;">
-  <span style="font-weight: bold">AQUACROSS contact point</span>
+  <span style="font-weight: bold">PONDERFUL contact point</span>
 </div>
 <div style="padding: 10px 0px 0px 10px">
 {% block package_basic_fields_org %}
@@ -83,7 +83,7 @@
       <div class="controls">
         <select id="field-organizations" name="owner_org" data-module="autocomplete">
           {% if h.check_config_permission('create_unowned_dataset') %}
-             <option value="" {% if not selected_org and data.id %} selected="selected" {% endif %}>{{ _('No organization') }}</option>
+             <option value="" {% if not selected_org and data.id %} selected="selected" {% endif %}>{{ _('No organisation') }}</option>
           {% endif %}
           {% for organization in organizations_available %}
             {# get out first org from users list only if there is not an existing org #}
