@@ -541,7 +541,8 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
         # (relative to this plugin.py file), and 'aquacross-metadata' is the name
         # that we'll use to refer to this fanstatic directory from CKAN
         # templates.
-        tk.add_resource('fanstatic', 'aquacross-metadata')
+        tk.add_public_directory(config, 'public')
+        tk.add_resource('webassets', 'ponderful')
 
     def _modify_package_schema(self, schema):
         schema.update({
