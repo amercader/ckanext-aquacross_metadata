@@ -3,8 +3,9 @@
 import ckan.plugins as p
 import ckan.plugins.toolkit as tk
 import ckan.lib.navl.dictization_functions as df
-import pylons.config as config
 import json
+
+config = tk.config
 
 def before_validator(key, flattened_data, errors, context):
 
@@ -15,16 +16,16 @@ def before_validator(key, flattened_data, errors, context):
     #   md_bbox_east (east longitude, used to help build the geoJSON Polygon)
     #   md_bbox_west (west longitude, used to help build the geoJSON Polygon)
 
-    # If the user did not select or enter a bounding box, then all variables are empty. 
+    # If the user did not select or enter a bounding box, then all variables are empty.
     # As bounding box is not mandatory in the form, no validation required
 
-    # Otherwise, we are checking if the 4 cordinates are valid (non-empty, valid number, in range) 
+    # Otherwise, we are checking if the 4 cordinates are valid (non-empty, valid number, in range)
     # if valid, we create a geoJSON polygon, and populate the 'spatial' field in the metadata schema.
 
     # Note: We will have 2 duplicate bounding box information in the metadata schema.
     # 1) the 4 individual coordinate fields
     # 2) the spatial field in GeoJON format
-   
+
     # get the spatial bounding box selected or input by the user via the HTML form
     north = flattened_data[('md_bbox_north',)]
     south = flattened_data[('md_bbox_south',)]
@@ -55,7 +56,7 @@ def before_validator(key, flattened_data, errors, context):
                 errors[('md_bbox_north',)].append('Invalid latitude value. Values must be between -90 and 90')
             else:
                 north_valid = True
-        except (AttributeError, ValueError), e:
+        except (AttributeError, ValueError) as e:
             errors[('md_bbox_north',)].append('Invalid latitude value. Values must be between -90 and 90')
     no_errors = north_valid
 
@@ -71,7 +72,7 @@ def before_validator(key, flattened_data, errors, context):
                 errors[('md_bbox_south',)].append('Invalid latitude value. Values must be between -90 and 90')
             else:
                 south_valid = True
-        except (AttributeError, ValueError), e:
+        except (AttributeError, ValueError) as e:
             errors[('md_bbox_south',)].append('Invalid latitude value. Values must be between -90 and 90')
     no_errors = no_errors and south_valid
 
@@ -93,7 +94,7 @@ def before_validator(key, flattened_data, errors, context):
                 errors[('md_bbox_east',)].append('Invalid longitude value. Values must be between -180 and 180')
             else:
                 east_valid = True
-        except (AttributeError, ValueError), e:
+        except (AttributeError, ValueError) as e:
             errors[('md_bbox_east',)].append('Invalid longitude value. Values must be between -180 and 180')
     no_errors = no_errors and east_valid
 
@@ -109,7 +110,7 @@ def before_validator(key, flattened_data, errors, context):
                 errors[('md_bbox_west',)].append('Invalid longitude value. Values must be between -180 and 180')
             else:
                 west_valid = True
-        except (AttributeError, ValueError), e:
+        except (AttributeError, ValueError) as e:
             errors[('md_bbox_west',)].append('Invalid longitude value. Values must be between -180 and 180')
     no_errors = no_errors and west_valid
 
@@ -119,7 +120,7 @@ def before_validator(key, flattened_data, errors, context):
         errors[('md_bbox_west',)].append('Invalid longitude value. East must be greater or equal to West')
         no_errors = False
 
-    # create a geoJSON polygon, and populate the 'spatial' field in the metadatad schema 
+    # create a geoJSON polygon, and populate the 'spatial' field in the metadatad schema
     if no_errors:
         spatial_field = '{ "type": "Polygon", "coordinates": [[[' + east + "," + south + "], [" + east + "," + north + "], [" + west + ", " + north + "], [" + west + "," + south + "],[" + east + "," + south + "]]]}"
         flattened_data[('spatial',)] = spatial_field
@@ -138,7 +139,7 @@ def create_md_classification_codes():
     except tk.ObjectNotFound:
         data = {'name': 'md_classification_codes'}
         vocab = tk.get_action('vocabulary_create')(context, data)
-        for tag in ('   ', 
+        for tag in ('   ',
                     'Biota', 'Boundaries', 'Climatology', 'Meteorology', 'Atmosphere', 'Economy', 'Elevation', 'Environment', 'Farming', 'Geoscientific information', 'Health', 'Imagery base maps earth cover', 'Inland waters', 'Intelligence military', 'Oceans', 'Planning cadastre', 'Society', 'Structure', 'Transportation', 'Utilities communication'):
             data = {'name': tag, 'vocabulary_id': vocab['id']}
             tk.get_action('tag_create')(context, data)
@@ -164,12 +165,12 @@ def create_md_spatial_representation_types():
     except tk.ObjectNotFound:
         data = {'name': 'md_spatial_representation_types'}
         vocab = tk.get_action('vocabulary_create')(context, data)
-        for tag in ('   ', 
+        for tag in ('   ',
                     'grid',
                     'stereoModel',
                     'textTable',
                     'tin',
-                    'vector', 
+                    'vector',
                     'video'):
             data = {'name': tag, 'vocabulary_id': vocab['id']}
             tk.get_action('tag_create')(context, data)
@@ -199,7 +200,7 @@ def create_md_inspire_themes():
                     'Addresses',
                     'Administrative units',
                     'Agricultural and aquaculture facilities',
-                    'Area management - restriction - regulation zones - reporting units', 
+                    'Area management - restriction - regulation zones - reporting units',
                     'Atmospheric conditions',
                     'Bio-geographical regions',
                     'Buildings',
@@ -264,7 +265,7 @@ def create_md_responsible_party_roles():
                     'Point of Contact',
                     'Principal Investigator',
                     'Processor',
-                    'Publisher', 
+                    'Publisher',
                     'Author'):
             data = {'name': tag, 'vocabulary_id': vocab['id']}
             tk.get_action('tag_create')(context, data)
@@ -507,7 +508,7 @@ def get_selected_organisation(data, organizations_available):
             return(get_default_organisation(organizations_available, data['group_id']))
 
 def get_default_organisation(organizations_available, fallback_org):
-    # find if 'qc' organisation is registered, if so use as default for new a new dataset 
+    # find if 'qc' organisation is registered, if so use as default for new a new dataset
     for organisation in organizations_available:
         if( organisation['name'] == "qc" ):
             return organisation['id']
@@ -578,7 +579,7 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
         schema.update({
             'md_dataset_creation_date': [tk.get_validator('ignore_missing'),
                                          tk.get_converter('convert_to_extras')]
-        })        
+        })
         schema.update({
             'md_dataset_publication_date': [tk.get_validator('ignore_missing'),
                                             tk.get_converter('convert_to_extras')]
@@ -818,7 +819,7 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
                            tk.get_validator('ignore_missing')]
         })
 
-        schema.update({'md_responsible_organisations': [  
+        schema.update({'md_responsible_organisations': [
                           tk.get_converter('convert_from_extras'),
                           tk.get_validator('ignore_missing') ]
                       })
@@ -849,7 +850,7 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
             'md_limitations_on_puclic_use': [tk.get_converter('convert_from_extras'),
                                              tk.get_validator('ignore_missing')]
         })
-        schema.update({'md_projections': [  
+        schema.update({'md_projections': [
                           tk.get_converter('convert_from_tags')('md_projections'),
                           tk.get_validator('ignore_missing') ]
                       })
