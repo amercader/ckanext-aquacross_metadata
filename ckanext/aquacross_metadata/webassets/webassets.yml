@@ -31,3 +31,8 @@ date_picker_css:
   output: ponderful/%(version)s_date_picker.css
   contents:
     - jquery-ui.css
+
+form_css:
+  output: ponderful/%(version)s_form.css
+  contents:
+    - form.css
