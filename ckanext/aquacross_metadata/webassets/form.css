@@ -42,4 +42,18 @@
   margin-top: 20px;
 }
 
+#resource-upload-button {
+  margin-left: 20px;
+}
 
+.resource-upload-field .btn-remove-url {
+  float:right;
+  top: -5px;
+}
+
+/* Upstream fixes */
+.btn {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+}
