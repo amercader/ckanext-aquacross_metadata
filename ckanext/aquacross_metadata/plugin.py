@@ -7,6 +7,12 @@ import ckan.lib.navl.dictization_functions as df
 
 from .actions import organization_list
 
+try:
+    from ckanext.spatial.interfaces import ISpatialHarvester
+    spatial_loaded = True
+except ImportError:
+    spatial_loaded = False
+
 config = tk.config
 
 def before_validator(key, flattened_data, errors, context):
@@ -522,6 +528,8 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
     p.implements(p.IConfigurer)
     p.implements(p.ITemplateHelpers)
     p.implements(p.IActions)
+    if spatial_loaded:
+        p.implements(p.ISpatialHarvester, inherit=True)
 
     #IActions
 
@@ -555,6 +563,88 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
         # templates.
         tk.add_public_directory(config, 'public')
         tk.add_resource('webassets', 'ponderful')
+
+    # ISpatialHarvester
+
+    def get_package_dict(self, context, data_dict):
+
+        package_dict = data_dict['package_dict']
+        iso_values = data_dict['iso_values']
+
+        dataset_lang = iso_values.get('dataset-language')
+        topic_cat = iso_values.get('topic-category')
+
+        if ( type(dataset_lang) is str):
+            package_dict['extras'].append(
+                {'key': 'Dataset language', 'value': dataset_lang}
+            )
+
+        else:
+            package_dict['extras'].append(
+                {'key': 'Dataset language', 'value': str(dataset_lang)}
+            )
+
+        if (type(topic_cat) is str):
+            package_dict['extras'].append(
+                {'key': 'Topic category', 'value': topic_cat}
+            )
+        else:
+            package_dict['extras'].append(
+                {'key': 'Topic category', 'value': str(topic_cat)}
+            )
+
+        ## customise extra fields
+        i = 0
+        for entry in package_dict['extras']:
+            ## keys:
+            #spatial must not be modified for spatial search
+            new_key=''
+            if  entry['key'] not in 'spatial':
+                new_key = entry['key'].capitalize()
+                new_key = new_key.replace("-", " ")
+                new_key = new_key.replace("_", " ")
+                package_dict['extras'][i]['key'] = new_key
+
+            ## replace responsible organisation with contact entry
+            if new_key == 'Responsible party':
+                package_dict['extras'][i]['value'] = iso_values.get('contact')
+                package_dict['extras'].append(
+                    {'key': 'Responsible party role', 'value': iso_values.get('role')}
+                )
+            ## print only spatial type and rename field
+            if entry['key'] == 'spatial':
+
+                spatial_json = json.loads(package_dict['extras'][i]['value'])
+
+                if spatial_json['type']:
+                    package_dict['extras'].append(
+                       {'key': 'Spatial data type', 'value': spatial_json['type']}
+                    )
+
+            if new_key =='Dataset reference date':
+
+                dataset_json = json.loads(package_dict['extras'][i]['value'])
+
+                if ( ( len(dataset_json) > 0 ) and (type(dataset_json[0]) is dict) ):
+                    if dataset_json[0]['value']:
+                        package_dict['extras'][i]['value'] = dataset_json[0]['value']
+
+                    if dataset_json[0]['type']:
+                        package_dict['extras'].append(
+                            {'key': 'Dataset reference type', 'value': dataset_json[0]['type']}
+                        )
+
+            ## values:
+            if (type(entry['value']) is str) and (entry['key'] not in 'spatial') :
+
+                new_value = entry['value']
+                patt = r'[\{\}\[\]\'\"]'
+                new_value = re.sub(patt,'',new_value)
+
+                new_value = re.sub(r'principalInvestigator', 'Principal Investigator', new_value)
+                package_dict['extras'][i]['value'] = new_value
+
+            i += 1
 
     # IDatasetForm
 
