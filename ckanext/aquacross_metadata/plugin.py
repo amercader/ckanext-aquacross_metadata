@@ -1,9 +1,11 @@
 # encoding: utf-8
 
+import json
 import ckan.plugins as p
 import ckan.plugins.toolkit as tk
 import ckan.lib.navl.dictization_functions as df
-import json
+
+from .actions import organization_list
 
 config = tk.config
 
@@ -519,6 +521,14 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
     p.implements(p.IDatasetForm)
     p.implements(p.IConfigurer)
     p.implements(p.ITemplateHelpers)
+    p.implements(p.IActions)
+
+    #IActions
+
+    def get_actions(self):
+        return {'organization_list': organization_list}
+
+    # ITemplateHelpers
 
     def get_helpers(self):
         return {'md_inspire_themes': md_inspire_themes,
@@ -532,6 +542,8 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
                 'get_dict_from_json': get_dict_from_json,
                 'get_selected_organisation': get_selected_organisation}
 
+    # IConfigurer
+
     def update_config(self, config):
         # Add this plugin's templates dir to CKAN's extra_template_paths, so
         # that CKAN will use this plugin's custom templates.
@@ -543,6 +555,8 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
         # templates.
         tk.add_public_directory(config, 'public')
         tk.add_resource('webassets', 'ponderful')
+
+    # IDatasetForm
 
     def _modify_package_schema(self, schema):
         schema.update({
