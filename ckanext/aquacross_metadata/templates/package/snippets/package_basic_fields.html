@@ -116,7 +116,7 @@
 
       <div class="form-group">
         <div>
-          {{ form.input('md_responsible_party_name[]', label=_('Organisation'), placeholder=_(''),
+          {{ form.input('md_responsible_party_name[]', label=_('Organisation'), placeholder='',
              value=data.md_responsible_party_name, error=errors.md_responsible_party_name,
              attrs={'data-module':'responsible_organisations_change', 'class': 'form-control'}) }}
         </div>
@@ -124,7 +124,7 @@
 
       <div class="form-group">
         <div>
-          {{ form.input('md_responsible_party_email[]', label=_('E-mail'), placeholder=_(''),
+          {{ form.input('md_responsible_party_email[]', label=_('E-mail'), placeholder='',
              value=data.md_responsible_party_email, error=errors.md_responsible_party_email,
              attrs={'data-module':'responsible_organisations_change', 'class': 'form-control'}) }}
         </div>
@@ -209,14 +209,14 @@
   {{ form.textarea('md_lineage', id='field-md_lineage', label=_('Lineage'), placeholder=_('This is a statement on process history and/or overall quality of the data. Where appropriate it may include a statement whether the data has been validated or quality assured, whether it is the official version (if multiple versions exist), and whether it has legal validity.'), value=data.md_lineage, error=errors.md_lineage) }}
 
   {% call
-    form.textarea('md_related_publications', id='field-md_related_publications', label=_('Related Publications'), placeholder=_(''), value=data.md_related_publications, error=errors.md_related_publications) %}
+    form.textarea('md_related_publications', id='field-md_related_publications', label=_('Related Publications'), placeholder='', value=data.md_related_publications, error=errors.md_related_publications) %}
     <span class="info-block">
       <i class="fa fa-info-circle"></i>
       {{ _('Add reference to publication in Chicago Manual Style') }}
     </span>
   {% endcall %}
 
-  {{ form.textarea('md_limitations_on_puclic_use', label=_('Limitations on public use'), id='field-md_limitations_on_puclic_use', placeholder=_(''), value=data.md_limitations_on_puclic_use, error=errors.md_limitations_on_puclic_use) }}
+  {{ form.textarea('md_limitations_on_puclic_use', label=_('Limitations on public use'), id='field-md_limitations_on_puclic_use', placeholder='', value=data.md_limitations_on_puclic_use, error=errors.md_limitations_on_puclic_use) }}
 
   {% block package_basic_fields_license %}
     <div class="form-group">
@@ -245,14 +245,14 @@
   <span style="font-weight: bold">Keywords</span>
 </div>
 <div style="padding: 10px 0px 0px 10px">
-  {% call form.input('md_keywords', label=_('Free keywords'), id='field-md_keywords', placeholder=_(''), value=data.md_keywords, error=errors.md_keywords, classes=['control-medium']) %}
+  {% call form.input('md_keywords', label=_('Free keywords'), id='field-md_keywords', placeholder='', value=data.md_keywords, error=errors.md_keywords, classes=['control-medium']) %}
     <span class="info-block">
       <i class="fa fa-info-circle"></i>
         {{ _('Free text (use a comma to separate keywords)') }}
     </span>
   {% endcall %}
 
-  {{ form.input('md_keywords_vocab_title', label=_('Vocabulary title'), id='field-md_keywords_vocab_title', placeholder=_(''), value=data.md_keywords_vocab_title, error=errors.md_keywords_vocab_title, classes=['control-medium']) }}
+  {{ form.input('md_keywords_vocab_title', label=_('Vocabulary title'), id='field-md_keywords_vocab_title', placeholder='', value=data.md_keywords_vocab_title, error=errors.md_keywords_vocab_title, classes=['control-medium']) }}
   {{ form.input_datepicker('md_keywords_vocab_date', label=_('Vocabulary date'), id='field-md_keywords_vocab_date', placeholder=_('YYYY-MM-DD'), value=data.md_keywords_vocab_date, error=errors.md_keywords_vocab_date, classes=['control-medium']) }}
   <div class="form-group">
     <label class="form-label" for="field-md_keywords_vocab_date_type">{{ _("Vocabulary date type") }}</label>
@@ -354,10 +354,10 @@
       </span>
     </div>
   </div>
-  {{ form.input('md_bbox_north', label=_('North'), id='field-md_bbox_north', placeholder=_(''), value=data.md_bbox_north, error=errors.md_bbox_north, classes=['control-medium'],attrs=attrs_text) }}
-  {{ form.input('md_bbox_south', label=_('South'), id='field-md_bbox_south', placeholder=_(''), value=data.md_bbox_south, error=errors.md_bbox_south, classes=['control-medium'],attrs=attrs_text) }}
-  {{ form.input('md_bbox_east', label=_('East'), id='field-md_bbox_east', placeholder=_(''), value=data.md_bbox_east, error=errors.md_bbox_east, classes=['control-medium'],attrs=attrs_text) }}
-  {% call form.input('md_bbox_west', label=_('West'), id='field-md_bbox_west', placeholder=_(''), value=data.md_bbox_west, error=errors.md_bbox_west, classes=['control-medium'],attrs=attrs_text) %}
+  {{ form.input('md_bbox_north', label=_('North'), id='field-md_bbox_north', placeholder='', value=data.md_bbox_north, error=errors.md_bbox_north, classes=['control-medium'],attrs=attrs_text) }}
+  {{ form.input('md_bbox_south', label=_('South'), id='field-md_bbox_south', placeholder='', value=data.md_bbox_south, error=errors.md_bbox_south, classes=['control-medium'],attrs=attrs_text) }}
+  {{ form.input('md_bbox_east', label=_('East'), id='field-md_bbox_east', placeholder='', value=data.md_bbox_east, error=errors.md_bbox_east, classes=['control-medium'],attrs=attrs_text) }}
+  {% call form.input('md_bbox_west', label=_('West'), id='field-md_bbox_west', placeholder='', value=data.md_bbox_west, error=errors.md_bbox_west, classes=['control-medium'],attrs=attrs_text) %}
     <span class="info-block">
       <i class="fa fa-info-circle"></i>
       {{ _('Geographic Lat/Lon Bounding Box') }}
