@@ -1,10 +1,19 @@
 # encoding: utf-8
 
+import json
 import ckan.plugins as p
 import ckan.plugins.toolkit as tk
 import ckan.lib.navl.dictization_functions as df
-import pylons.config as config
-import json
+
+from .actions import organization_list
+
+try:
+    from ckanext.spatial.interfaces import ISpatialHarvester
+    spatial_loaded = True
+except ImportError:
+    spatial_loaded = False
+
+config = tk.config
 
 def before_validator(key, flattened_data, errors, context):
 
@@ -15,16 +24,16 @@ def before_validator(key, flattened_data, errors, context):
     #   md_bbox_east (east longitude, used to help build the geoJSON Polygon)
     #   md_bbox_west (west longitude, used to help build the geoJSON Polygon)
 
-    # If the user did not select or enter a bounding box, then all variables are empty. 
+    # If the user did not select or enter a bounding box, then all variables are empty.
     # As bounding box is not mandatory in the form, no validation required
 
-    # Otherwise, we are checking if the 4 cordinates are valid (non-empty, valid number, in range) 
+    # Otherwise, we are checking if the 4 cordinates are valid (non-empty, valid number, in range)
     # if valid, we create a geoJSON polygon, and populate the 'spatial' field in the metadata schema.
 
     # Note: We will have 2 duplicate bounding box information in the metadata schema.
     # 1) the 4 individual coordinate fields
     # 2) the spatial field in GeoJON format
-   
+
     # get the spatial bounding box selected or input by the user via the HTML form
     north = flattened_data[('md_bbox_north',)]
     south = flattened_data[('md_bbox_south',)]
@@ -55,7 +64,7 @@ def before_validator(key, flattened_data, errors, context):
                 errors[('md_bbox_north',)].append('Invalid latitude value. Values must be between -90 and 90')
             else:
                 north_valid = True
-        except (AttributeError, ValueError), e:
+        except (AttributeError, ValueError) as e:
             errors[('md_bbox_north',)].append('Invalid latitude value. Values must be between -90 and 90')
     no_errors = north_valid
 
@@ -71,7 +80,7 @@ def before_validator(key, flattened_data, errors, context):
                 errors[('md_bbox_south',)].append('Invalid latitude value. Values must be between -90 and 90')
             else:
                 south_valid = True
-        except (AttributeError, ValueError), e:
+        except (AttributeError, ValueError) as e:
             errors[('md_bbox_south',)].append('Invalid latitude value. Values must be between -90 and 90')
     no_errors = no_errors and south_valid
 
@@ -93,7 +102,7 @@ def before_validator(key, flattened_data, errors, context):
                 errors[('md_bbox_east',)].append('Invalid longitude value. Values must be between -180 and 180')
             else:
                 east_valid = True
-        except (AttributeError, ValueError), e:
+        except (AttributeError, ValueError) as e:
             errors[('md_bbox_east',)].append('Invalid longitude value. Values must be between -180 and 180')
     no_errors = no_errors and east_valid
 
@@ -109,7 +118,7 @@ def before_validator(key, flattened_data, errors, context):
                 errors[('md_bbox_west',)].append('Invalid longitude value. Values must be between -180 and 180')
             else:
                 west_valid = True
-        except (AttributeError, ValueError), e:
+        except (AttributeError, ValueError) as e:
             errors[('md_bbox_west',)].append('Invalid longitude value. Values must be between -180 and 180')
     no_errors = no_errors and west_valid
 
@@ -119,7 +128,7 @@ def before_validator(key, flattened_data, errors, context):
         errors[('md_bbox_west',)].append('Invalid longitude value. East must be greater or equal to West')
         no_errors = False
 
-    # create a geoJSON polygon, and populate the 'spatial' field in the metadatad schema 
+    # create a geoJSON polygon, and populate the 'spatial' field in the metadatad schema
     if no_errors:
         spatial_field = '{ "type": "Polygon", "coordinates": [[[' + east + "," + south + "], [" + east + "," + north + "], [" + west + ", " + north + "], [" + west + "," + south + "],[" + east + "," + south + "]]]}"
         flattened_data[('spatial',)] = spatial_field
@@ -138,7 +147,7 @@ def create_md_classification_codes():
     except tk.ObjectNotFound:
         data = {'name': 'md_classification_codes'}
         vocab = tk.get_action('vocabulary_create')(context, data)
-        for tag in ('   ', 
+        for tag in ('   ',
                     'Biota', 'Boundaries', 'Climatology', 'Meteorology', 'Atmosphere', 'Economy', 'Elevation', 'Environment', 'Farming', 'Geoscientific information', 'Health', 'Imagery base maps earth cover', 'Inland waters', 'Intelligence military', 'Oceans', 'Planning cadastre', 'Society', 'Structure', 'Transportation', 'Utilities communication'):
             data = {'name': tag, 'vocabulary_id': vocab['id']}
             tk.get_action('tag_create')(context, data)
@@ -164,12 +173,12 @@ def create_md_spatial_representation_types():
     except tk.ObjectNotFound:
         data = {'name': 'md_spatial_representation_types'}
         vocab = tk.get_action('vocabulary_create')(context, data)
-        for tag in ('   ', 
+        for tag in ('   ',
                     'grid',
                     'stereoModel',
                     'textTable',
                     'tin',
-                    'vector', 
+                    'vector',
                     'video'):
             data = {'name': tag, 'vocabulary_id': vocab['id']}
             tk.get_action('tag_create')(context, data)
@@ -199,7 +208,7 @@ def create_md_inspire_themes():
                     'Addresses',
                     'Administrative units',
                     'Agricultural and aquaculture facilities',
-                    'Area management - restriction - regulation zones - reporting units', 
+                    'Area management - restriction - regulation zones - reporting units',
                     'Atmospheric conditions',
                     'Bio-geographical regions',
                     'Buildings',
@@ -264,7 +273,7 @@ def create_md_responsible_party_roles():
                     'Point of Contact',
                     'Principal Investigator',
                     'Processor',
-                    'Publisher', 
+                    'Publisher',
                     'Author'):
             data = {'name': tag, 'vocabulary_id': vocab['id']}
             tk.get_action('tag_create')(context, data)
@@ -507,7 +516,7 @@ def get_selected_organisation(data, organizations_available):
             return(get_default_organisation(organizations_available, data['group_id']))
 
 def get_default_organisation(organizations_available, fallback_org):
-    # find if 'qc' organisation is registered, if so use as default for new a new dataset 
+    # find if 'qc' organisation is registered, if so use as default for new a new dataset
     for organisation in organizations_available:
         if( organisation['name'] == "qc" ):
             return organisation['id']
@@ -518,6 +527,16 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
     p.implements(p.IDatasetForm)
     p.implements(p.IConfigurer)
     p.implements(p.ITemplateHelpers)
+    p.implements(p.IActions)
+    if spatial_loaded:
+        p.implements(p.ISpatialHarvester, inherit=True)
+
+    #IActions
+
+    def get_actions(self):
+        return {'organization_list': organization_list}
+
+    # ITemplateHelpers
 
     def get_helpers(self):
         return {'md_inspire_themes': md_inspire_themes,
@@ -531,6 +550,8 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
                 'get_dict_from_json': get_dict_from_json,
                 'get_selected_organisation': get_selected_organisation}
 
+    # IConfigurer
+
     def update_config(self, config):
         # Add this plugin's templates dir to CKAN's extra_template_paths, so
         # that CKAN will use this plugin's custom templates.
@@ -540,7 +561,92 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
         # (relative to this plugin.py file), and 'aquacross-metadata' is the name
         # that we'll use to refer to this fanstatic directory from CKAN
         # templates.
-        tk.add_resource('fanstatic', 'aquacross-metadata')
+        tk.add_public_directory(config, 'public')
+        tk.add_resource('webassets', 'ponderful')
+
+    # ISpatialHarvester
+
+    def get_package_dict(self, context, data_dict):
+
+        package_dict = data_dict['package_dict']
+        iso_values = data_dict['iso_values']
+
+        dataset_lang = iso_values.get('dataset-language')
+        topic_cat = iso_values.get('topic-category')
+
+        if ( type(dataset_lang) is str):
+            package_dict['extras'].append(
+                {'key': 'Dataset language', 'value': dataset_lang}
+            )
+
+        else:
+            package_dict['extras'].append(
+                {'key': 'Dataset language', 'value': str(dataset_lang)}
+            )
+
+        if (type(topic_cat) is str):
+            package_dict['extras'].append(
+                {'key': 'Topic category', 'value': topic_cat}
+            )
+        else:
+            package_dict['extras'].append(
+                {'key': 'Topic category', 'value': str(topic_cat)}
+            )
+
+        ## customise extra fields
+        i = 0
+        for entry in package_dict['extras']:
+            ## keys:
+            #spatial must not be modified for spatial search
+            new_key=''
+            if  entry['key'] not in 'spatial':
+                new_key = entry['key'].capitalize()
+                new_key = new_key.replace("-", " ")
+                new_key = new_key.replace("_", " ")
+                package_dict['extras'][i]['key'] = new_key
+
+            ## replace responsible organisation with contact entry
+            if new_key == 'Responsible party':
+                package_dict['extras'][i]['value'] = iso_values.get('contact')
+                package_dict['extras'].append(
+                    {'key': 'Responsible party role', 'value': iso_values.get('role')}
+                )
+            ## print only spatial type and rename field
+            if entry['key'] == 'spatial':
+
+                spatial_json = json.loads(package_dict['extras'][i]['value'])
+
+                if spatial_json['type']:
+                    package_dict['extras'].append(
+                       {'key': 'Spatial data type', 'value': spatial_json['type']}
+                    )
+
+            if new_key =='Dataset reference date':
+
+                dataset_json = json.loads(package_dict['extras'][i]['value'])
+
+                if ( ( len(dataset_json) > 0 ) and (type(dataset_json[0]) is dict) ):
+                    if dataset_json[0]['value']:
+                        package_dict['extras'][i]['value'] = dataset_json[0]['value']
+
+                    if dataset_json[0]['type']:
+                        package_dict['extras'].append(
+                            {'key': 'Dataset reference type', 'value': dataset_json[0]['type']}
+                        )
+
+            ## values:
+            if (type(entry['value']) is str) and (entry['key'] not in 'spatial') :
+
+                new_value = entry['value']
+                patt = r'[\{\}\[\]\'\"]'
+                new_value = re.sub(patt,'',new_value)
+
+                new_value = re.sub(r'principalInvestigator', 'Principal Investigator', new_value)
+                package_dict['extras'][i]['value'] = new_value
+
+            i += 1
+
+    # IDatasetForm
 
     def _modify_package_schema(self, schema):
         schema.update({
@@ -578,7 +684,7 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
         schema.update({
             'md_dataset_creation_date': [tk.get_validator('ignore_missing'),
                                          tk.get_converter('convert_to_extras')]
-        })        
+        })
         schema.update({
             'md_dataset_publication_date': [tk.get_validator('ignore_missing'),
                                             tk.get_converter('convert_to_extras')]
@@ -818,7 +924,7 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
                            tk.get_validator('ignore_missing')]
         })
 
-        schema.update({'md_responsible_organisations': [  
+        schema.update({'md_responsible_organisations': [
                           tk.get_converter('convert_from_extras'),
                           tk.get_validator('ignore_missing') ]
                       })
@@ -849,7 +955,7 @@ class Aquacross_MetadataPlugin(p.SingletonPlugin, tk.DefaultDatasetForm):
             'md_limitations_on_puclic_use': [tk.get_converter('convert_from_extras'),
                                              tk.get_validator('ignore_missing')]
         })
-        schema.update({'md_projections': [  
+        schema.update({'md_projections': [
                           tk.get_converter('convert_from_tags')('md_projections'),
                           tk.get_validator('ignore_missing') ]
                       })

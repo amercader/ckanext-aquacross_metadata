@@ -1,0 +1,59 @@
+.form-label {
+    width: 120px;
+}
+
+.form-label {
+    float: left;
+    width: 160px;
+    padding-top: 5px;
+    text-align: right;
+}
+
+.controls {
+  margin-left: 180px;
+}
+
+.controls select {
+  width: 220px;
+  border: 1px solid #cccccc;
+  background-color: #ffffff;
+  border-radius: 0.25rem;
+  height: 30px;
+  color: #555555;
+}
+
+.controls input {
+  width: 320px;
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  padding: 4px 6px;
+  color: #555555;
+}
+
+.form-group .info-block {
+  text-align: left;
+  padding-left: 120px;
+  margin-top: 20px;
+}
+
+.controls .info-block {
+  text-align: left;
+  padding-left: 0;
+  margin-top: 20px;
+}
+
+#resource-upload-button {
+  margin-left: 20px;
+}
+
+.resource-upload-field .btn-remove-url {
+  float:right;
+  top: -5px;
+}
+
+/* Upstream fixes */
+.btn {
+  display: inline-flex;
+  gap: 0.5rem;
+  align-items: center;
+}

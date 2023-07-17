@@ -1,0 +1,38 @@
+date_picker:
+  filter: rjsmin
+  output: ponderful/%(version)s_date_picker.js
+  extra:
+    preload:
+      - base/main
+  contents:
+    - jquery.ui.core.js
+    - jquery.ui.datepicker.js
+    - aquacross_metadata_datepicker.js
+
+responsible_orgs:
+  filter: rjsmin
+  output: ponderful/%(version)s_responsible_orgs.js
+  extra:
+    preload:
+      - base/main
+  contents:
+    - responsible_organisations.js
+
+bounding_box:
+  filter: rjsmin
+  output: ponderful/%(version)s_bounding_box.js
+  extra:
+    preload:
+      - base/main
+  contents:
+    - bounding_box.js
+
+date_picker_css:
+  output: ponderful/%(version)s_date_picker.css
+  contents:
+    - jquery-ui.css
+
+form_css:
+  output: ponderful/%(version)s_form.css
+  contents:
+    - form.css
